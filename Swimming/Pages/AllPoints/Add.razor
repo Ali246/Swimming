@@ -1,0 +1,75 @@
+﻿@attribute [Authorize]
+@page "/AllPoints/Add/"
+@using Swimming.Data
+@using Swimming.CustomModel
+@inject IJSRuntime JSRuntime
+@inject Swimming.IService.IRacingService RacingService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+<h1>انشاء نقاط </h1>
+<hr />
+<RadzenCard>
+    <AuthorizeView Context="authContext">
+        <Authorized>
+            <EditForm Model="@NewPoints" OnValidSubmit="CreateRacing" Context="formContext">
+                <DataAnnotationsValidator />
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="No" class="control-label">المركز</label>
+                        <InputNumber for="No" class="form-control" @bind-Value="@NewPoints.No"></InputNumber>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="point" class="control-label">النقاط</label>
+                        <InputNumber for="point" class="form-control" @bind-Value="@NewPoints.point"></InputNumber>
+
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default">حفظ</button>
+                        <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
+                    </div>
+
+                </div>
+            </EditForm>
+        </Authorized>
+    </AuthorizeView>
+</RadzenCard>
+
+
+@code {
+    Points NewPoints = new Points();
+    List<Points> allPointsList = new List<Points>();
+
+    protected async Task CreateRacing()
+    {
+        var Returned = RacingService.AddPoint(NewPoints);
+        if (await Returned)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Duration = 4000 });
+            NavigationManager.NavigateTo("AllPoints/MyPoints/", true);
+        }
+        else
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error", Duration = 4000 });
+        }
+
+    }
+
+    void cancel()
+    {
+
+        NavigationManager.NavigateTo("AllPoints/MyPoints/", true);
+    }
+
+    void Change(object value)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+        // StateHasChanged();
+    }
+    void ShowNotification(NotificationMessage message)
+    {
+        notificationService.Notify(message);
+
+    }
+}

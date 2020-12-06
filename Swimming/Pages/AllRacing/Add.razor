@@ -1,0 +1,98 @@
+﻿@attribute [Authorize]
+@page "/AllRacing/Add/"
+@using Swimming.Data
+@using Swimming.CustomModel
+@inject IJSRuntime JSRuntime
+@inject Swimming.IService.IRacingService RacingService
+@inject NavigationManager NavigationManager
+<h1>انشاء مشارك </h1>
+<hr />
+<RadzenCard>
+    <AuthorizeView Context="authContext">
+        <Authorized>
+            <EditForm Model="@NewRacing" OnValidSubmit="CreateRacing" Context="formContext">
+                <DataAnnotationsValidator />
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="Name" class="control-label">الاسم</label>
+                        <InputText for="Name" class="form-control" @bind-Value="@NewRacing.RacingName"></InputText>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="Name" class="control-label">نوع السباق</label>
+                        <InputText for="Name" class="form-control" @bind-Value="@NewRacing.RacingType"></InputText>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="TypesOfParticipateName" class="control-label">سنة</label>
+                        <RadzenDropDown AllowClear="true"
+                                        AllowFiltering="true"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        @bind-Value=@yearsofRacing
+                                        Multiple="true"
+                                        Placeholder="Select..."
+                                        Data=@customers
+                                        TextProperty="Year"
+                                        ValueProperty="Id"
+                                        Change=@(args => OnChange(args, "DropDown with multiple selection")) Style="width:400px" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default">حفظ</button>
+                        <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
+                    </div>
+
+                </div>
+            </EditForm>
+        </Authorized>
+    </AuthorizeView>
+</RadzenCard>
+
+
+@code {
+    bool popup;
+    object selectedYears = new object();
+    IEnumerable<Years> customers;
+    Racing NewRacing = new Racing();
+    RacingDetails NewRacingDetails = new RacingDetails();
+    public string StateMessage { get; set; }
+    IEnumerable<int> yearsofRacing;
+    List<Racing> allRacingList = new List<Racing>();
+    List<Years> allYears = new List<Years>();
+    List<TypesOfRacing> allTypes = new List<TypesOfRacing>();
+    protected override async Task OnInitializedAsync()
+    {
+        allTypes.Add(new TypesOfRacing() { Id = 0, TypeName = "بطولة سباحة حرة" });
+        allTypes.Add(new TypesOfRacing() { Id = 1, TypeName = "بطولة سباحة زعانف" });
+        var Date =  DateTime.Now.Year;
+        for (int i = 1990; i < Date; i++)
+        {
+            allYears.Add(new Years() { Id = i-1990, Year= i.ToString() });
+        }
+        customers = allYears.AsEnumerable();
+    }
+    protected void CreateRacing()
+    {
+        RacingService.AddRacing(NewRacing, yearsofRacing);
+        NavigationManager.NavigateTo("AllRacing/MyRacing/", true);
+    }
+
+    void cancel()
+    {
+
+        NavigationManager.NavigateTo("AllRacing/MyRacing/", true);
+    }
+
+    void Change(object value)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+        // StateHasChanged();
+    }
+
+    void OnChange(object value, string name)
+    {
+        selectedYears = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+
+    }
+
+}

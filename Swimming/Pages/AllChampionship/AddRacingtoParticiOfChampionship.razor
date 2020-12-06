@@ -1,0 +1,129 @@
+﻿@attribute [Authorize]
+@page "/AllChampionship/AddRacingtoParticiOfChampionship/{ChampionId}"
+@using Swimming.Data
+@using Swimming.CustomModel
+@inject IJSRuntime JSRuntime
+@inject Swimming.IService.IChampionshipService ChampionshipService
+@inject Swimming.IService.IParticipantSevice ParticipantSevice
+@inject Swimming.IService.IRacingService RacingService
+@inject NavigationManager NavigationManager
+<h1>انشاء سباقات </h1>
+<div class="text-body">
+    @*<button type="submit" class="btn btn-default">حفظ</button>*@
+    <button class="btn btn-info" type="button" @onclick="() => cancel()">رجوع</button>
+</div>
+<hr />
+<RadzenCard>
+    <AuthorizeView Context="authContext">
+        <Authorized>
+            <EditForm Model="@NewChampionship" Context="formContext">
+                <DataAnnotationsValidator />
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="Name" class="control-label">الاسم</label>
+                        <InputText for="Name" class="form-control" ReadOnly="true" @bind-Value="@NewChampionship.ChampionshipName"></InputText>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Date" class="control-label">ناريخ السباق</label>
+                        <RadzenDatePicker ReadOnly="true" @bind-Value="@NewChampionship.Date" DateFormat="d" class="control-label" />
+                    </div>
+
+                    <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
+                                AllowPaging="true" PageSize="3"
+                                AllowSorting="true" EditMode="DataGridEditMode.Single"
+                                Data="@newParticipants" TItem="Participants" Style="width:700px !important">
+                        <Columns>
+                            <RadzenGridColumn TItem="Participants" Property="Id" Title="Id" />
+                            <RadzenGridColumn TItem="Participants" Property="Name" Title="Name" />
+
+                            <RadzenGridColumn Width="100px" TItem="Participants" Property="al:web:url" Title="+" Filterable="false">
+                                <Template Context="Participants">
+                                    <RadzenButton Text="" Icon="+" Click="@(args => adddetails(Participants) )" id="bnt-style-general">
+
+                                    </RadzenButton>
+                                </Template>
+                            </RadzenGridColumn>
+                        </Columns>
+
+                    </RadzenGrid>
+
+                </div>
+                @if (show)
+                {
+                    <AddDetailsOfChamp championDetailsID="@ChampionId" ParticiID="@x" />
+                }
+
+
+            </EditForm>
+        </Authorized>
+    </AuthorizeView>
+</RadzenCard>
+
+
+@code {
+    RadzenGrid<Participants> ParticipantsGrid;
+    RadzenGrid<ChampionShipwithRacing> w;
+    [Parameter]
+    public string ChampionId { get; set; }
+    List<Participants> newParticipants = new List<Participants>();
+    List<Participants> allParticipants = new List<Participants>();
+    Participants selectedParticipants = new Participants();
+    List<Racing> Racings;
+    IEnumerable<Racing> customers;
+    Championship NewChampionship = new Championship();
+    IEnumerable<int> selectedRacing;
+    string x = null;
+    bool show = false;
+    object str = null;
+    object data = null;
+    protected override async Task OnParametersSetAsync()
+    {
+        allParticipants = await Task.Run(() => ParticipantSevice.GetParticipants());
+        newParticipants = await Task.Run(() => ChampionshipService.GetParticipants(Convert.ToInt32(ChampionId)));
+        NewChampionship = await Task.Run(() => ChampionshipService.GetChampionshipbyId(Convert.ToInt32(ChampionId)));
+
+    }
+    protected void UpdateChampionship()
+    {
+        ChampionshipService.UpdateChampionship(NewChampionship, newParticipants);
+        NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip/", true);
+    }
+    void cancel()
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip/", true);
+    }
+
+    void Change(object value)
+    {
+        str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+        Racings = RacingService.GetRacingOfParti((int)value);
+        selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
+        newParticipants.Add(selectedParticipants);
+        customers = Racings.AsEnumerable();
+        ParticipantsGrid.Reload();
+    }
+    void OnChanges(object values, string name)
+    {
+        data = values is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)values) : values;
+    }
+    public class z
+    {
+        public object participateIdz { get; set; }
+        public object Racingz { get; set; }
+    }
+    void Delete(Participants part)
+    {
+
+        newParticipants.Remove(part);
+        ParticipantsGrid.Reload();
+    }
+    protected void adddetails(Participants Particip)
+    {
+        x = Particip.Id.ToString();
+        show = true;
+        //  NavigationManager.NavigateTo("AllChampionship/AddDetailsOfChamp/" + Particip.Id + "/" + ChampionId, true);
+    }
+}

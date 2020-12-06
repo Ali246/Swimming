@@ -1,0 +1,125 @@
+﻿@attribute [Authorize]
+@page "/AllChampionship/AddResult/{ChampionShId}"
+@using Swimming.Data
+@using Swimming.CustomModel
+@inject IJSRuntime JSRuntime
+@inject Swimming.IService.IChampionshipService ChampionshipService
+@inject Swimming.IService.IParticipantSevice ParticipantSevice
+@inject Swimming.IService.IRacingService RacingService
+@inject NavigationManager NavigationManager
+<h1>اضافة نتائج </h1>
+<hr />
+<RadzenCard>
+    <AuthorizeView Context="authContext">
+        <Authorized>
+            <EditForm Model="@NewChampionship" OnValidSubmit="CreateChampionship" Context="formContext">
+                <DataAnnotationsValidator />
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="Name" class="control-label">الاسم</label>
+                        <InputText for="Name" class="form-control" @bind-Value="@NewChampionship.ChampionshipName"></InputText>
+
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Date" class="control-label">ناريخ السباق</label>
+                        <RadzenDatePicker @bind-Value="@NewChampionship.Date" DateFormat="d" class="control-label" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="RacingName" class="control-label">السباق</label>
+                        <RadzenDropDown AllowClear="true" TValue="int"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        FilterOperator="StringFilterOperator.StartsWith"
+                                        AllowFiltering="true"
+                                        Data="@allRacingofchamp"
+                                        TextProperty="RacingName"
+                                        ValueProperty="Id"
+                                        Style="margin-bottom: 20px"
+                                        Change="@(args => Change(args))"
+                                        class="form-control" />
+                    </div>
+                    <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
+                                AllowPaging="true" PageSize="10"
+                                AllowSorting="true" EditMode="DataGridEditMode.Single"
+                                Data="@newParticipants" TItem="Participants" Style="width:700px !important">
+                        <Columns>
+                            <RadzenGridColumn TItem="Participants" Property="Name" Title="Name" />
+                            <RadzenGridColumn Width="150px" TItem="Participants" Property="al:web:url" Title="مسح" Filterable="false">
+                                <Template Context="Participants">
+                                    <InputNumber  @bind-Value="newChampionShipwithRacing.Result" id="bnt-style-general" />
+                                </Template>
+                            </RadzenGridColumn>
+                        </Columns>
+
+                    </RadzenGrid>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default">حفظ</button>
+                        <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
+                    </div>
+                </div>
+            </EditForm>
+        </Authorized>
+    </AuthorizeView>
+</RadzenCard>
+
+
+@code {
+    [Parameter]
+    public string ChampionShId { get; set; }
+    RadzenGrid<Participants> ParticipantsGrid;
+    ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
+    List<Participants> newParticipants = new List<Participants>();
+    List<Racing> allRacingofchamp= new List<Racing>();
+    Participants selectedParticipants = new Participants();
+    List<Racing> Racings;
+    IEnumerable<Racing> customers;
+    Championship NewChampionship = new Championship();
+    IEnumerable<int> selectedRacing;
+    object str = null;
+    object data = null;
+    protected override async Task OnInitializedAsync()
+    {
+        allRacingofchamp = await Task.Run(() => ChampionshipService.GetRacingOfCS(Convert.ToInt32(ChampionShId)));
+        NewChampionship = await Task.Run(() => ChampionshipService.GetChampionshipbyId(Convert.ToInt32(ChampionShId)));
+    }
+    protected void CreateChampionship()
+    {
+        ChampionshipService.AddChampionship(NewChampionship, newParticipants);
+        NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip/", true);
+    }
+    void cancel()
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip/", true);
+    }
+
+    void Change(object value)
+    {
+        str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+        var GetParti= ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
+        // selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
+        newParticipants= GetParti;
+        customers = Racings.AsEnumerable();
+        ParticipantsGrid.Reload();
+    }
+    void OnChanges(object values, string name)
+    {
+        data = values is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)values) : values;
+    }
+    public class z
+    {
+        public object participateIdz { get; set; }
+        public object Racingz { get; set; }
+    }
+    void Delete(Participants part)
+    {
+
+        newParticipants.Remove(part);
+        ParticipantsGrid.Reload();
+    }
+    protected void adddetails(Participants Particip)
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/AddDetailsOfChamp/" + Particip.Id, true);
+    }
+}

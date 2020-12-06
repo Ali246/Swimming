@@ -1,0 +1,92 @@
+﻿@attribute [Authorize]
+@page "/AllParticipants/MyParticipant"
+@using Swimming.Data
+@inject Swimming.IService.IParticipantSevice  ParticipantSevice
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+<AuthorizeView Context="AuthorizeContext">
+    <Authorized>
+        @*// <RadzenButton Text="Add" Icon="add" Click="@(args => InsrtRow())" id="bnt-style-general" />*@
+
+        <br />
+        <RadzenButton  Icon="add_circle_outline" style="margin-bottom:10px; margin-left:1350px;" Text="اضافة" Click="@InsrtRow" />
+        <RadzenCard>
+            @if (ParticipantsList == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <RadzenGrid @ref="ParticipantGrid" AllowFiltering="true"
+                            AllowPaging="true" PageSize="10"
+                            AllowSorting="true" EditMode="DataGridEditMode.Multiple"
+                            Data="@ParticipantsList" TItem="Participants">
+                    <Columns>
+                        <RadzenGridColumn TItem="Participants" Property="Name" Title="الاسم" />
+                        <RadzenGridColumn TItem="Participants" Property="CaptainOrOrganization" Title="الكباتن/الهيئات" />
+                        <RadzenGridColumn TItem="Participants" Property="Birthday" Title="تاريخ الميلاد">
+                            <Template Context="Participants">
+                                @String.Format("{0:d}", Participants.Birthday)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="Participants" Property="GenderName" Title="النوع" />
+                        <RadzenGridColumn TItem="Participants" Property="TypeOfParticipantName" Title="نوع المشارك" />
+                        <RadzenGridColumn TItem="Participants" Property="al:web:url" Title="تعديل" Filterable="false">
+                            <Template Context="Participants">
+                                <RadzenButton Text="تعديل" Icon="edit" Click="@(args => Edit(Participants))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="Participants" Property="al:web:url" Title="مسح" Filterable="false">
+                            <Template Context="Participants">
+                                <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(Participants))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+
+            }
+        </RadzenCard>
+
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    RadzenGrid<Participants> ParticipantGrid;
+    [Parameter]
+    public string viewType { get; set; }
+    List<Participants> ParticipantsList = new List<Participants>();
+    Participants Participant = new Participants();
+    protected override async Task OnInitializedAsync()
+    {
+
+        ParticipantsList = await Task.Run(() => ParticipantSevice.GetParticipants());
+    }
+    void EditRow(Participants Participant)
+    {
+        ParticipantGrid.EditRow(Participant);
+    }
+    protected void Edit(Participants UpdateParticipant)
+    {
+
+        NavigationManager.NavigateTo("AllParticipants/Edit/" + UpdateParticipant.Id);
+    }
+    async Task Delete(Participants DeleteParticipant)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "هل تريد مسح المشارك ؟");
+        if (confirmed)
+        {
+            DeleteParticipant.DeleteDate = DateTime.Now;
+            ParticipantSevice.UpdateParticipant(DeleteParticipant);
+            ParticipantsList.Remove(DeleteParticipant);
+            ParticipantGrid.Reload();
+        }
+    } 
+    protected void InsrtRow()
+    {
+
+        NavigationManager.NavigateTo("AllParticipants/Add/");
+    }   
+}

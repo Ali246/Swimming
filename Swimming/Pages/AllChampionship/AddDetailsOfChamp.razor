@@ -1,0 +1,101 @@
+﻿@attribute [Authorize]
+@page "/AllChampionship/AddDetailsOfChamp/{ParticiID}/{championDetailsID}"
+@using Swimming.Data
+@using Swimming.CustomModel
+@inject IJSRuntime JSRuntime
+@inject Swimming.IService.IRacingService RacingService
+@inject Swimming.IService.IChampionshipService ChampionshipService
+@inject NavigationManager NavigationManager
+@inject NotificationService notificationService
+@inject Swimming.IService.IParticipantSevice ParticipantSevice
+<hr />
+<h1>@newParticipants.Name</h1>
+<RadzenCard>
+    <AuthorizeView Context="authContext">
+        <Authorized>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="No" class="control-label">السباقات</label>
+                        <RadzenDropDown AllowClear="true" 
+                                        @bind-Value="selectionofRacing"
+                                        AllowFiltering="true"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        Multiple="true"
+                                        Placeholder="Select..."
+                                        Data=@customers
+                                        MaxSelectedLabels="5"
+                                        TextProperty="RacingName"
+                                        ValueProperty="Id"
+                                        Change=@(args => OnChanges(args, "DropDown with multiple selection")) Style="width:300px" />
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-default" @onclick="() => CreateRacing()">حفظ</button>
+                   @*<button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>*@
+                </div>
+
+        </Authorized>
+    </AuthorizeView>
+</RadzenCard>
+
+
+@code {
+    [Parameter]
+    public string ParticiID { get; set; }
+    [Parameter]
+    public string championDetailsID { get; set; }
+    RadzenGrid<ChampionShipwithRacing> w;
+    List<Racing> Racings;
+    IEnumerable<Racing> customers;
+    IEnumerable<int> selectionofRacing;
+    Participants newParticipants = new Participants();
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Convert.ToInt32(championDetailsID) !=0 && Convert.ToInt32(ParticiID) !=0)
+        {
+            selectionofRacing = ChampionshipService.GetChampionRacingDetails(Convert.ToInt32(championDetailsID), Convert.ToInt32(ParticiID));
+            Racings = RacingService.GetRacingOfParti(Convert.ToInt32(ParticiID));
+            customers = Racings.AsEnumerable();
+            newParticipants = ParticipantSevice.GetParticipantbyId(Convert.ToInt32(ParticiID));
+        }
+    }
+    protected void CreateRacing()
+    {
+        var countOfselected = selectionofRacing.Count();
+        if (countOfselected > 5)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "اقصي عدد من السباقات للمشارك هو ٥", Duration = 4000 });
+        }
+        else
+        {
+            ChampionshipService.AddChampionshipRacingDetails(selectionofRacing, Convert.ToInt32(championDetailsID), Convert.ToInt32(ParticiID));
+            // NavigationManager.NavigateTo("AllChampionship/AddRacingtoParticiOfChampionship/" + championDetailsID, true);
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "تمت الاضافة بنجاح", Duration = 4000 });
+        }
+
+    }
+
+    void cancel()
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip", true);
+    }
+
+    void Change(object value)
+    {
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+        // StateHasChanged();
+    }
+    void OnChanges(object values, string name)
+    {
+
+        var data = values is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)values) : values;
+    }
+    void ShowNotification(NotificationMessage message)
+    {
+        notificationService.Notify(message);
+
+    }
+
+}

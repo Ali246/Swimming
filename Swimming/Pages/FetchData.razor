@@ -1,0 +1,43 @@
+﻿@attribute [Authorize]
+@page "/fetchdata"
+
+@using Swimming.Data
+@inject WeatherForecastService ForecastService
+
+    <AuthorizeView>
+        <Authorized>
+            <RadzenCard>
+                <h1>Weather forecast</h1>
+
+                <p>This component demonstrates fetching data from a service.</p>
+
+                @if (forecasts == null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    <RadzenGrid AllowFiltering="true"
+                                AllowPaging="true" PageSize="3"
+                                AllowSorting="true" EditMode="DataGridEditMode.Single"
+                                Data="@forecasts" TItem="WeatherForecast" >
+                        <Columns>
+
+                            <RadzenGridColumn TItem="WeatherForecast" Property="Summary" Title="Summary" />
+
+                          
+                        </Columns>
+                    </RadzenGrid>
+                }
+            </RadzenCard>
+</Authorized>
+    </AuthorizeView>
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    }
+}

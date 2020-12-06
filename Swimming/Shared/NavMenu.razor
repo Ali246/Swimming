@@ -1,0 +1,74 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">سباحة</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" >
+                <span class="oi oi-home" aria-hidden="true"></span> الرئيسية
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" @onclick="()=>MasterDataSubMenu = !MasterDataSubMenu">
+                <span class="oi oi-menu" aria-hidden="true"></span> البيانات الاساسية
+            </NavLink>
+            @if (MasterDataSubMenu)
+            {
+        <ul>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/AllPoints/MyPoints">
+                    <span class="" aria-hidden="true"></span> النقاط
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/AllCaptain/CaptainOrOrg">
+                    <span class="" aria-hidden="true"></span>الكباتن/الهيئات
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/AllParticipants/MyParticipant">
+                    <span class="" aria-hidden="true"></span> المشاركين
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/AllRacing/MyRacing">
+                    <span class="" aria-hidden="true"></span> السباق
+                </NavLink>
+            </li>
+        </ul>
+            }
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" @onclick="()=>ChampionShipSubMenu = !ChampionShipSubMenu">
+                <span class="oi oi-menu" aria-hidden="true"></span> البطولات
+            </NavLink>
+            @if (ChampionShipSubMenu)
+            {
+                <ul>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/AllChampionship/GenerateChampionShip">
+                            <span class="" aria-hidden="true"></span> انشاء بطولة
+                        </NavLink>
+                    </li>                 
+                </ul>
+            }
+        </li>
+
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool MasterDataSubMenu;
+    private bool ChampionShipSubMenu;    
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

@@ -1,0 +1,119 @@
+﻿@attribute [Authorize]
+@page "/AllChampionship/GenerateChampionShip"
+@using Swimming.Data
+@inject Swimming.IService.IChampionshipService  ChampionshipService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+<AuthorizeView Context="AuthorizeContext">
+    <Authorized>   
+
+        <br />
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom:10px; margin-left:1350px;" Text="اضافة" Click="@InsrtRow" />
+        <RadzenCard>
+            @if (ChampionshipList == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <RadzenGrid @ref="ChampionshipGrid" AllowFiltering="true"
+                            AllowPaging="true" PageSize="10"
+                            AllowSorting="true" EditMode="DataGridEditMode.Multiple"
+                            Data="@ChampionshipList" TItem="Championship" CellRender="@CellRender">
+                    <Columns>
+
+                        <RadzenGridColumn TItem="Championship" Property="ChampionshipName" Title="اسم البطولة" />
+                        <RadzenGridColumn TItem="Championship" Property="Date" Title="تاريخ البطولة">
+                            <Template Context="Championship">
+                                @String.Format("{0:d}", Championship.Date)
+                            </Template>
+                        </RadzenGridColumn>
+
+                        @*<RadzenGridColumn TItem="Championship" Property="al:web:url" Title="اضافة سباق" Filterable="false">
+                            <Template Context="Championship">
+                                <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>*@
+                       
+                        <RadzenGridColumn TItem="Championship"  Property="AddResult" Title="اضافة نتائج" Filterable="false">
+                            <Template Context="Championship">
+                                <RadzenButton Width="150px" Text="اضافة نتائج" Icon="edit" Click="@(args => AddResulttoParti(Championship))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="Championship" Property="EditChamp" Title="تعديل" Filterable="false">
+                            <Template Context="Championship">
+                                <RadzenButton Width="100px" Text="تعديل" Icon="edit" Click="@(args => Edit(Championship))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn Width="150px"  TItem="Championship" Property="DeleteChamp" Title="مسح" Filterable="false">
+                            <Template Context="Championship">
+                                <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(Championship))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+              
+            }
+        </RadzenCard>
+
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    RadzenGrid<Championship> ChampionshipGrid;
+    [Parameter]
+    public string viewType { get; set; }
+    List<Championship> ChampionshipList = new List<Championship>();
+    Championship Championships = new Championship();
+    IEnumerable<int> yearsofChampionship;
+    protected override async Task OnInitializedAsync()
+    {
+
+        ChampionshipList = await Task.Run(() => ChampionshipService.GetChampionship());
+    }
+    void EditRow(Championship EditChampionship)
+    {
+        ChampionshipGrid.EditRow(EditChampionship);
+    }
+    protected void Edit(Championship UpdateChampionship)
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/Edit/" + UpdateChampionship.Id);
+    }
+    async Task Delete(Championship DeleteChampionship)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "هل تريد مسح البطولة ؟");
+        if (confirmed)
+        {
+            DeleteChampionship.DeletedDate = DateTime.Now;
+            ChampionshipService.DeleteChampionship(DeleteChampionship);
+            ChampionshipList.Remove(DeleteChampionship);
+            ChampionshipGrid.Reload();
+        }
+    }
+    protected void InsrtRow()
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/Add/");
+    }
+    protected void AddRacingtoParti(Championship UpdateChampionship)
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/AddRacingtoParticiOfChampionship/" + UpdateChampionship.Id);
+    }
+    protected void AddResulttoParti(Championship ResultChampionship)
+    {
+
+        NavigationManager.NavigateTo("AllChampionship/AddResult/" + ResultChampionship.Id);
+    }
+    void CellRender(CellRenderEventArgs<Championship> args)
+    {
+        if (args.Column.Property == "EditChamp")
+        {
+            args.Attributes.Add("style", $"visibility: {(args.Data.Date < DateTime.Now ? "hidden" : "visible")};");
+        }
+    }
+}

@@ -1,0 +1,98 @@
+﻿@attribute [Authorize]
+@page "/AllPoints/MyPoints"
+@using Swimming.Data
+@inject Swimming.IService.IRacingService  RacingService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject NotificationService notificationService
+<AuthorizeView Context="AuthorizeContext">
+    <Authorized>
+        @*// <RadzenButton Text="Add" Icon="add" Click="@(args => InsrtRow())" id="bnt-style-general" />*@        
+        <br />
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom:10px; margin-left:1350px;" Text="اضافة" Click="@InsrtRow" />
+        <RadzenCard>
+            @if (PointsList == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <RadzenGrid @ref="PointsGrid" AllowFiltering="true"
+                            AllowPaging="true" PageSize="10"
+                            AllowSorting="true" EditMode="DataGridEditMode.Multiple"
+                            Data="@PointsList" TItem="Points">
+                    <Columns>
+
+                        <RadzenGridColumn TItem="Points" Property="No" Title="المركز" />
+                        <RadzenGridColumn TItem="Points" Property="point" Title="النقاط" />
+                        <RadzenGridColumn TItem="Points" Property="al:web:url" Title="تعديل" Filterable="false">
+                            <Template Context="Points">
+                                <RadzenButton Width="150px" Text="تعديل" Icon="edit" Click="@(args => Edit(Points))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn Width="150px" TItem="Points" Property="al:web:url" Title="مسح" Filterable="false">
+                            <Template Context="Points">
+                                <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(Points))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+
+            }
+        </RadzenCard>
+
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    RadzenGrid<Points> PointsGrid;
+    List<Points> PointsList = new List<Points>();
+    Points newPoints = new Points();
+    bool warning;
+    protected override async Task OnInitializedAsync()
+    {
+
+        PointsList = await Task.Run(() => RacingService.GetPoints());
+    }
+    void EditRow(Points EditPoints)
+    {
+        PointsGrid.EditRow(EditPoints);
+    }
+    protected void Edit(Points UpdatePoints)
+    {
+
+        NavigationManager.NavigateTo("AllPoints/Edit/" + UpdatePoints.Id);
+    }
+    async Task Delete(Points DeletePoints)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "هل تريد مسح السباق ؟");
+        if (confirmed)
+        {
+            DeletePoints.DeleteDate = DateTime.Now;
+            var success= RacingService.UpdatePoint(DeletePoints);
+            if (await success)
+            {
+                PointsList.Remove(DeletePoints);
+                PointsGrid.Reload();
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "Success", Duration = 4000 });
+            }
+            else
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Error", Duration = 4000 });
+            }
+        }
+    }
+    protected void InsrtRow()
+    {
+      NavigationManager.NavigateTo("AllPoints/Add/");
+    }
+    void ShowNotification(NotificationMessage message)
+    {
+        notificationService.Notify(message);
+
+    }
+
+}
