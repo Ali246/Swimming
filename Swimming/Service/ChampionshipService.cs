@@ -219,6 +219,31 @@ namespace Swimming.Service
             }
             return 0;
         }
+        public int GetChampionRacingDetailsUpdate(int ChampionId, int PartiId,int RacingId)
+        {
+            if (_db != null)
+            {
+                if (ChampionId != 0 && PartiId != 0)
+                {
+                    var IDOfCSD = _db.CSDChampionshipDetails.Where(CSD => CSD.ChampionshipId == ChampionId && CSD.ParticipantId == PartiId).FirstOrDefault().Id;
+                    return _db.CWRChampionShipwithRacing.Where(CWR => CWR.ChampionshipDetailsId == IDOfCSD && CWR.RacingId== RacingId).Select(x => x.Id).FirstOrDefault();
+                }
+            }
+            return 0;
+        }
+        public async Task<int> AddNewResults(ChampionShipwithRacing newChampionShipwithRacing)
+        {
+            if (_db != null)
+            {
+               var GetCWR= _db.CWRChampionShipwithRacing.Find(newChampionShipwithRacing.Id);
+                GetCWR.Result = newChampionShipwithRacing.Result;
+                _db.CWRChampionShipwithRacing.Update(GetCWR);
+                //Commit the transaction
+                _db.SaveChanges();
+                return 1;
+            }
+            return 0;
+        }
         #endregion    
     }
 }

@@ -37,12 +37,12 @@
                             </Template>
                         </RadzenGridColumn>*@
                        
-                        <RadzenGridColumn TItem="Championship"  Property="AddResult" Title="اضافة نتائج" Filterable="false">
+                        <RadzenGridColumn Width="170px" TItem="Championship"  Property="AddResult" Title="اضافة نتائج" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Width="150px" Text="اضافة نتائج" Icon="edit" Click="@(args => AddResulttoParti(Championship))" id="bnt-style-general" />
                             </Template>
                         </RadzenGridColumn>
-                        <RadzenGridColumn TItem="Championship" Property="EditChamp" Title="تعديل" Filterable="false">
+                        <RadzenGridColumn Width="150px" TItem="Championship" Property="EditChamp" Title="تعديل" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Width="100px" Text="تعديل" Icon="edit" Click="@(args => Edit(Championship))" id="bnt-style-general" />
                             </Template>

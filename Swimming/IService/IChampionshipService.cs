@@ -24,6 +24,8 @@ namespace Swimming.IService
        List<Participants> GetPartiOfRac(int RacingId, int ChampionId);
         Task DeleteChampionshipwithRa(int ChampionshipId, Participants Participants);
         int AddNewParti(int ChampionshipId, int newParticipantId);
+        int GetChampionRacingDetailsUpdate(int ChampionId, int PartiId, int RacingId);
+        Task<int> AddNewResults(ChampionShipwithRacing newChampionShipwithRacing);
         #endregion
     }
 }

@@ -21,7 +21,7 @@
 
                     </div>
                     <div class="form-group">
-                        <label asp-for="Date" class="control-label">ناريخ السباق</label>
+                        <label asp-for="Date" class="control-label">تاريخ السباق</label>
                         <RadzenDatePicker @bind-Value="@NewChampionship.Date" DateFormat="d" class="control-label" />
                     </div>
 
@@ -46,7 +46,16 @@
                             <RadzenGridColumn TItem="Participants" Property="Name" Title="Name" />
                             <RadzenGridColumn Width="150px" TItem="Participants" Property="al:web:url" Title="مسح" Filterable="false">
                                 <Template Context="Participants">
-                                    <InputNumber  @bind-Value="newChampionShipwithRacing.Result" id="bnt-style-general" />
+                                    <RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
+                                                      ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
+                                                      SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />
+                                </Template>
+                            </RadzenGridColumn>
+                            <RadzenGridColumn Width="100px" TItem="Participants" Property="al:web:url" Title="+" Filterable="false">
+                                <Template Context="Participants">
+                                    <RadzenButton Text="" Icon="+" Click="@(args => addResult(Participants) )" id="bnt-style-general">
+
+                                    </RadzenButton>
                                 </Template>
                             </RadzenGridColumn>
                         </Columns>
@@ -73,10 +82,12 @@
     Participants selectedParticipants = new Participants();
     List<Racing> Racings;
     IEnumerable<Racing> customers;
+    public DateTime? time { get; set; }
     Championship NewChampionship = new Championship();
     IEnumerable<int> selectedRacing;
     object str = null;
     object data = null;
+
     protected override async Task OnInitializedAsync()
     {
         allRacingofchamp = await Task.Run(() => ChampionshipService.GetRacingOfCS(Convert.ToInt32(ChampionShId)));
@@ -95,12 +106,16 @@
 
     void Change(object value)
     {
-        str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
-        var GetParti= ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
-        // selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
-        newParticipants= GetParti;
-        customers = Racings.AsEnumerable();
-        ParticipantsGrid.Reload();
+        if ((int)value !=0)
+        {
+            str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+            var GetParti= ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
+            // selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
+            newParticipants= GetParti;
+            customers = Racings.AsEnumerable();
+            ParticipantsGrid.Reload();
+        }
+
     }
     void OnChanges(object values, string name)
     {
@@ -117,9 +132,17 @@
         newParticipants.Remove(part);
         ParticipantsGrid.Reload();
     }
-    protected void adddetails(Participants Particip)
+    protected void addResult(Participants Particip)
     {
-
-        NavigationManager.NavigateTo("AllChampionship/AddDetailsOfChamp/" + Particip.Id, true);
+        int result =(time.Value.Minute*60) + time.Value.Second;
+        var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Particip.Id, (int)str);
+        newChampionShipwithRacing.Id = CSDID;
+        newChampionShipwithRacing.Result = result;
+        ChampionshipService.AddNewResults(newChampionShipwithRacing);
     }
+    void OnChange(DateTime? value, string name, string format)
+    {
+        time = value;
+    }
+
 }
