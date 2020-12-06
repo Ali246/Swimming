@@ -6,8 +6,12 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @using System.Text.Json.Serialization
+<div class="titleicon">
+    <span class="oi oi-star" aria-hidden="true"></span>
+    <h1>البطولات </h1>
+</div>
 <AuthorizeView Context="AuthorizeContext">
-    <Authorized>   
+    <Authorized>
 
         <br />
         <RadzenButton Icon="add_circle_outline" style="margin-bottom:10px; margin-left:1350px;" Text="اضافة" Click="@InsrtRow" />
@@ -32,12 +36,12 @@
                         </RadzenGridColumn>
 
                         @*<RadzenGridColumn TItem="Championship" Property="al:web:url" Title="اضافة سباق" Filterable="false">
-                            <Template Context="Championship">
-                                <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
-                            </Template>
-                        </RadzenGridColumn>*@
-                       
-                        <RadzenGridColumn Width="170px" TItem="Championship"  Property="AddResult" Title="اضافة نتائج" Filterable="false">
+                                <Template Context="Championship">
+                                    <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
+                                </Template>
+                            </RadzenGridColumn>*@
+
+                        <RadzenGridColumn Width="170px" TItem="Championship" Property="AddResult" Title="اضافة نتائج" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Width="150px" Text="اضافة نتائج" Icon="edit" Click="@(args => AddResulttoParti(Championship))" id="bnt-style-general" />
                             </Template>
@@ -47,14 +51,14 @@
                                 <RadzenButton Width="100px" Text="تعديل" Icon="edit" Click="@(args => Edit(Championship))" id="bnt-style-general" />
                             </Template>
                         </RadzenGridColumn>
-                        <RadzenGridColumn Width="150px"  TItem="Championship" Property="DeleteChamp" Title="مسح" Filterable="false">
+                        <RadzenGridColumn Width="150px" TItem="Championship" Property="DeleteChamp" Title="مسح" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(Championship))" id="bnt-style-general" />
                             </Template>
                         </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
-              
+
             }
         </RadzenCard>
 

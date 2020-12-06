@@ -5,110 +5,113 @@
 @inject IJSRuntime JSRuntime
 @inject Swimming.IService.IParticipantSevice ParticipantSevice
 @inject NavigationManager NavigationManager
-<h1>تعديل مشارك</h1>
-<hr />
-<RadzenCard>
-    <AuthorizeView Context="authContext">
-        <Authorized>
-            <EditForm Model="@NewParticipants" OnValidSubmit="UpdateParticipat" Context="formContext">
-                <DataAnnotationsValidator />
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="Name" class="control-label">الاسم</label>
-                        <InputText for="Name" class="form-control" @bind-Value="@NewParticipants.Name"></InputText>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="CaptainOrOrganizName" class="control-label">الكابتن/الهيئة</label>
-                        <RadzenDropDown AllowClear="true" TValue="int"
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.StartsWith"
-                                        AllowFiltering="true"
-                                        Data="@allCaptainOrOrganization"
-                                        TextProperty="CaptainOrOrganizName"
-                                        ValueProperty="Id"
-                                        Style="margin-bottom: 20px"
-                                        Change="@(args => Change(args))"
-                                        @bind-Value="@NewParticipants.CaptainOrOrganizationId"
-                                        class="form-control" />
-                    </div>
+    <div class="titleicon">
+        <span class="oi oi-people" aria-hidden="true"></span>
+        <h1>تعديل المشارك </h1>
+    </div>
+    <hr />
+    <RadzenCard>
+        <AuthorizeView Context="authContext">
+            <Authorized>
+                <EditForm Model="@NewParticipants" OnValidSubmit="UpdateParticipat" Context="formContext">
+                    <DataAnnotationsValidator />
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="Name" class="control-label">الاسم</label>
+                            <InputText for="Name" class="form-control" @bind-Value="@NewParticipants.Name"></InputText>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="CaptainOrOrganizName" class="control-label">الكابتن/الهيئة</label>
+                            <RadzenDropDown AllowClear="true" TValue="int"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            FilterOperator="StringFilterOperator.StartsWith"
+                                            AllowFiltering="true"
+                                            Data="@allCaptainOrOrganization"
+                                            TextProperty="CaptainOrOrganizName"
+                                            ValueProperty="Id"
+                                            Style="margin-bottom: 20px"
+                                            Change="@(args => Change(args))"
+                                            @bind-Value="@NewParticipants.CaptainOrOrganizationId"
+                                            class="form-control" />
+                        </div>
 
-                    <div class="form-group">
-                        <label asp-for="ClaritygradeName" class="control-label">النوع</label>
-                        <RadzenDropDown AllowClear="true" TValue="int"
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.StartsWith"
-                                        AllowFiltering="true"
-                                        Data="@allTypesOfParticipate" TextProperty="TypesOfParticipateName"
-                                        ValueProperty="Id"
-                                        Style="margin-bottom: 20px"
-                                        Change="@(args => Change(args))"
-                                        @bind-Value="@NewParticipants.TypeOfParticipant"
-                                        class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="ClaritygradeName" class="control-label">الجنس</label>
-                        <RadzenDropDown AllowClear="true" TValue="int"
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.StartsWith"
-                                        AllowFiltering="true"
-                                        Data="@allGender" TextProperty="Type"
-                                        ValueProperty="Id"
-                                        Style="margin-bottom: 20px"
-                                        Change="@(args => Change(args))"
-                                        @bind-Value="@NewParticipants.Gender"
-                                        class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Date" class="control-label">تاريخ الميلاد</label>
-                        <RadzenDatePicker @bind-Value="@NewParticipants.Birthday" DateFormat="d" class="control-label" />
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-default">حفظ</button>
-                        <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
-                    </div>
+                        <div class="form-group">
+                            <label asp-for="ClaritygradeName" class="control-label">النوع</label>
+                            <RadzenDropDown AllowClear="true" TValue="int"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            FilterOperator="StringFilterOperator.StartsWith"
+                                            AllowFiltering="true"
+                                            Data="@allTypesOfParticipate" TextProperty="TypesOfParticipateName"
+                                            ValueProperty="Id"
+                                            Style="margin-bottom: 20px"
+                                            Change="@(args => Change(args))"
+                                            @bind-Value="@NewParticipants.TypeOfParticipant"
+                                            class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ClaritygradeName" class="control-label">الجنس</label>
+                            <RadzenDropDown AllowClear="true" TValue="int"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            FilterOperator="StringFilterOperator.StartsWith"
+                                            AllowFiltering="true"
+                                            Data="@allGender" TextProperty="Type"
+                                            ValueProperty="Id"
+                                            Style="margin-bottom: 20px"
+                                            Change="@(args => Change(args))"
+                                            @bind-Value="@NewParticipants.Gender"
+                                            class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Date" class="control-label">تاريخ الميلاد</label>
+                            <RadzenDatePicker @bind-Value="@NewParticipants.Birthday" DateFormat="d" class="control-label" />
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default">حفظ</button>
+                            <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
+                        </div>
 
-                </div>
-            </EditForm>
-        </Authorized>
-    </AuthorizeView>
-</RadzenCard>
+                    </div>
+                </EditForm>
+            </Authorized>
+        </AuthorizeView>
+    </RadzenCard>
 
 
-@code {
-    [Parameter]
-    public string PartiId { get; set; }
-    Participants NewParticipants = new Participants();
-    public string StateMessage { get; set; }
-    List<CaptainOrOrganization> allCaptainOrOrganization = new List<CaptainOrOrganization>();
-    List<Gender> allGender = new List<Gender>();
-    List<TypesOfParticipate> allTypesOfParticipate = new List<TypesOfParticipate>();
-    protected override async Task OnInitializedAsync()
-    {
-        allGender.Add(new Gender() { Id = 0, Type = "Male" });
-        allGender.Add(new Gender() { Id = 1, Type = "Female" });
-        allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 0, TypesOfParticipateName = "Senior " });
-        allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 1, TypesOfParticipateName = "junior  " });
-        allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 2, TypesOfParticipateName = "special needs " });
-        allCaptainOrOrganization = await Task.Run(() => ParticipantSevice.GetAllCaptain());
-        NewParticipants = ParticipantSevice.GetParticipantbyId(Convert.ToInt32(PartiId));
-    }    
-    protected void UpdateParticipat()
-    {
-        NewParticipants.GenderName = NewParticipants.Gender == 0 ? "Male" : NewParticipants.Gender == 1 ? "Female" : null;
-        NewParticipants.TypeOfParticipantName = NewParticipants.TypeOfParticipant == 0 ? "Senior " : NewParticipants.TypeOfParticipant ==1 ? "junior  " : NewParticipants.TypeOfParticipant == 2 ? "special needs ":null;
-        ParticipantSevice.UpdateParticipant(NewParticipants);
-        NavigationManager.NavigateTo("AllParticipants/MyParticipant/", true);
+    @code {
+        [Parameter]
+        public string PartiId { get; set; }
+        Participants NewParticipants = new Participants();
+        public string StateMessage { get; set; }
+        List<CaptainOrOrganization> allCaptainOrOrganization = new List<CaptainOrOrganization>();
+        List<Gender> allGender = new List<Gender>();
+        List<TypesOfParticipate> allTypesOfParticipate = new List<TypesOfParticipate>();
+        protected override async Task OnInitializedAsync()
+        {
+            allGender.Add(new Gender() { Id = 0, Type = "Male" });
+            allGender.Add(new Gender() { Id = 1, Type = "Female" });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 0, TypesOfParticipateName = "Senior " });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 1, TypesOfParticipateName = "junior  " });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 2, TypesOfParticipateName = "special needs " });
+            allCaptainOrOrganization = await Task.Run(() => ParticipantSevice.GetAllCaptain());
+            NewParticipants = ParticipantSevice.GetParticipantbyId(Convert.ToInt32(PartiId));
+        }
+        protected void UpdateParticipat()
+        {
+            NewParticipants.GenderName = NewParticipants.Gender == 0 ? "Male" : NewParticipants.Gender == 1 ? "Female" : null;
+            NewParticipants.TypeOfParticipantName = NewParticipants.TypeOfParticipant == 0 ? "Senior " : NewParticipants.TypeOfParticipant == 1 ? "junior  " : NewParticipants.TypeOfParticipant == 2 ? "special needs " : null;
+            ParticipantSevice.UpdateParticipant(NewParticipants);
+            NavigationManager.NavigateTo("AllParticipants/MyParticipant/", true);
+        }
+
+        void cancel()
+        {
+
+            NavigationManager.NavigateTo("AllParticipants/MyParticipant/", true);
+        }
+
+        void Change(object value)
+        {
+            var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+            // StateHasChanged();
+        }
     }
-
-    void cancel()
-    {
-
-        NavigationManager.NavigateTo("AllParticipants/MyParticipant/", true);
-    }
-
-    void Change(object value)
-    {
-        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
-        // StateHasChanged();
-    }
-}

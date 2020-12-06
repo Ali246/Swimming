@@ -6,6 +6,10 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @using System.Text.Json.Serialization
+<div class="titleicon">
+    <span class="oi oi-signal" aria-hidden="true"></span>
+    <h1>السباقات </h1>
+</div>
 <AuthorizeView Context="AuthorizeContext">
     <Authorized>
         @*// <RadzenButton Text="Add" Icon="add" Click="@(args => InsrtRow())" id="bnt-style-general" />*@
@@ -74,7 +78,7 @@
         if (confirmed)
         {
             DeleteRacing.DeleteDate = DateTime.Now;
-            RacingService.UpdateRacing(DeleteRacing,yearsofRacing);
+            RacingService.UpdateRacing(DeleteRacing, yearsofRacing);
             RacingList.Remove(DeleteRacing);
             RacingGrid.Reload();
         }

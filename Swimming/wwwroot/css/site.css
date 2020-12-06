@@ -1,14 +1,69 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: font-family: 'Noto Kufi Arabic' !important;
+    text-align: right !important;
+    overflow-y: hidden;
 }
 
 a, .btn-link {
     color: #0366d6;
 }
-
-.btn-primary {
+a, h1, h2, h3, p, label, input {
+    font-family: 'Noto Kufi Arabic' !important;
+}
+.ui-column-title {
+    font-family: 'Noto Kufi Arabic' !important;
+    margin: 0 5px;
+}
+.ui-button-text {
+    font-family: 'Noto Kufi Arabic' !important;
+}
+.ui-button i {
+    display: inline;
+    margin: 0 5px;
+}
+.top-row.pl-4.navbar.navbar-dark {
+    margin-bottom: 70px;
+}
+.nav.flex-column ul {
+    padding: 0 5px !important;
+}
+.nav.flex-column {
+    padding: 0 !important;
+}
+.ui-button.btn-primary, .btn-primary.ui-paginator-element {
+    background-color: #4182ff !important;
+}
+.card .btn-default {
+    background: #498bf1 !important;
+    color: #fff !important;
+    font-family: 'Noto Kufi Arabic' !important;
+}
+.card .btn {
+    background: #dc1515;
+    color: #fff !important;
+    font-family: 'Noto Kufi Arabic' !important;
+}
+.titleicon span {
+    font-size: 30px;
+    margin: 0 10px;
+}
+.titleicon h1 {
+    display: inline;
+}
+.titleicon {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background: #fff;
+    box-shadow: 1px 1px 1px 1px #ececec;
+}
+.logoimg {
+    width: 200px;
+    margin: auto;
+}
+    .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
@@ -156,10 +211,13 @@ app {
     }
 
     .sidebar {
-        width: 265px;
+        width: 20%;
         height: 100vh;
         position: sticky;
         top: 0;
+    }
+    .main {
+        width: 80%;
     }
 
     .main .top-row {
@@ -180,4 +238,23 @@ app {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+
+/* 
+ * Noto Kufi Arabic (Arabic) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../fonts/NotoKufiArabic-Regular.eot);
+    src: url(../fonts/NotoKufiArabic-Regular.eot?#iefix) format('embedded-opentype'), url(../fonts/NotoKufiArabic-Regular.woff2) format('woff2'), url(../fonts/NotoKufiArabic-Regular.woff) format('woff'), url(../fonts/NotoKufiArabic-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    font-style: normal;
+    font-weight: 700;
+    src: url(../fonts/NotoKufiArabic-Bold.eot);
+    src: url(../fonts/NotoKufiArabic-Bold.eot?#iefix) format('embedded-opentype'), url(../fonts/NotoKufiArabic-Bold.woff2) format('woff2'), url(../fonts/NotoKufiArabic-Bold.woff) format('woff'), url(../fonts/NotoKufiArabic-Bold.ttf) format('truetype');
 }

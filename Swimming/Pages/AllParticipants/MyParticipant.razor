@@ -6,12 +6,16 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @using System.Text.Json.Serialization
+<div class="titleicon">
+    <span class="oi oi-people" aria-hidden="true"></span>
+    <h1>المشاركين </h1>
+</div>
 <AuthorizeView Context="AuthorizeContext">
     <Authorized>
         @*// <RadzenButton Text="Add" Icon="add" Click="@(args => InsrtRow())" id="bnt-style-general" />*@
 
         <br />
-        <RadzenButton  Icon="add_circle_outline" style="margin-bottom:10px; margin-left:1350px;" Text="اضافة" Click="@InsrtRow" />
+        <RadzenButton Icon="add_circle_outline" style="margin-bottom:10px; margin-left:1350px;" Text="اضافة" Click="@InsrtRow" />
         <RadzenCard>
             @if (ParticipantsList == null)
             {
@@ -83,10 +87,10 @@
             ParticipantsList.Remove(DeleteParticipant);
             ParticipantGrid.Reload();
         }
-    } 
+    }
     protected void InsrtRow()
     {
 
         NavigationManager.NavigateTo("AllParticipants/Add/");
-    }   
+    }
 }
