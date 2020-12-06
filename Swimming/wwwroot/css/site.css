@@ -23,6 +23,18 @@ a, h1, h2, h3, p, label, input {
     display: inline;
     margin: 0 5px;
 }
+.ui-datepicker-trigger {
+    left: 0.625rem;
+    right: inherit !important;
+}
+.ui-dropdown-trigger, .ui-multiselect-trigger {
+    right: inherit !important;
+    left: 0;
+}
+.ui-dropdown-clear-icon {
+    left: 1.6875rem;
+    right: inherit !important;
+}
 .top-row.pl-4.navbar.navbar-dark {
     margin-bottom: 70px;
 }
