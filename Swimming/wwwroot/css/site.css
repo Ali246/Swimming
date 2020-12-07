@@ -3,7 +3,7 @@
 html, body {
     font-family: font-family: 'Noto Kufi Arabic' !important;
     text-align: right !important;
-    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 a, .btn-link {
@@ -11,6 +11,18 @@ a, .btn-link {
 }
 a, h1, h2, h3, p, label, input {
     font-family: 'Noto Kufi Arabic' !important;
+}
+.ui-datatable-tablewrapper > table, .ui-datatable-scrollable-header-box > table, .ui-datatable-scrollable-table-wrapper > table, .ui-datatable-scrollable-footer-box > table {
+    font-family: 'Noto Kufi Arabic' !important;
+}
+.ui-dropdown-item, .ui-dropdown-items li, .ui-multiselect-items li, .ui-autocomplete-items li, .ui-multiselect-item, .ui-autocomplete-list-item, .ui-menuitem {
+    font-family: 'Noto Kufi Arabic' !important;
+}
+.ui-paginator-icon {
+    transform: rotate(180deg);
+}
+.ui-timepicker {
+    direction: ltr;
 }
 .ui-column-title {
     font-family: 'Noto Kufi Arabic' !important;
