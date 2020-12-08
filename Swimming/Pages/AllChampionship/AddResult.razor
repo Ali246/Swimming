@@ -12,7 +12,7 @@
 <RadzenCard>
     <AuthorizeView Context="authContext">
         <Authorized>
-            <EditForm Model="@NewChampionship" OnValidSubmit="CreateChampionship" Context="formContext">
+            <EditForm Model="@NewChampionship"  Context="formContext">
                 <DataAnnotationsValidator />
                 <div class="col-md-4">
                     <div class="form-group">
@@ -39,30 +39,30 @@
                                         class="form-control" />
                     </div>
                     <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
-                                AllowPaging="true" PageSize="10"
+                                AllowPaging="true" PageSize="10" 
                                 AllowSorting="true" EditMode="DataGridEditMode.Single"
-                                Data="@newParticipants" TItem="Participants" Style="width:700px !important">
+                                Data="@newParticipants" TItem="Participants" Style="width:700px !important" RowSelect="@(args => Party = args)">
                         <Columns>
                             <RadzenGridColumn TItem="Participants" Property="Name" Title="Name" />
                             <RadzenGridColumn Width="150px" TItem="Participants" Property="al:web:url" Title="مسح" Filterable="false">
                                 <Template Context="Participants">
                                     <RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
-                                                      ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
+                                                      ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss"  ShowTimeOkButton="false"
                                                       SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />
                                 </Template>
                             </RadzenGridColumn>
-                            <RadzenGridColumn Width="100px" TItem="Participants" Property="al:web:url" Title="+" Filterable="false">
+                            @*<RadzenGridColumn Width="100px" TItem="Participants" Property="al:web:url" Title="+" Filterable="false">
                                 <Template Context="Participants">
                                     <RadzenButton Text="" Icon="+" Click="@(args => addResult(Participants) )" id="bnt-style-general">
 
                                     </RadzenButton>
                                 </Template>
-                            </RadzenGridColumn>
+                            </RadzenGridColumn>*@
                         </Columns>
 
                     </RadzenGrid>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-default">حفظ</button>
+                        @*<button type="submit" class="btn btn-default">حفظ</button>*@
                         <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
                     </div>
                 </div>
@@ -81,23 +81,24 @@
     List<Racing> allRacingofchamp= new List<Racing>();
     Participants selectedParticipants = new Participants();
     List<Racing> Racings;
+    Participants Party;
     IEnumerable<Racing> customers;
     public DateTime? time { get; set; }
     Championship NewChampionship = new Championship();
     IEnumerable<int> selectedRacing;
     object str = null;
     object data = null;
-
+    IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
     protected override async Task OnInitializedAsync()
     {
         allRacingofchamp = await Task.Run(() => ChampionshipService.GetRacingOfCS(Convert.ToInt32(ChampionShId)));
         NewChampionship = await Task.Run(() => ChampionshipService.GetChampionshipbyId(Convert.ToInt32(ChampionShId)));
     }
-    protected void CreateChampionship()
-    {
-        ChampionshipService.AddChampionship(NewChampionship, newParticipants);
-        NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip/", true);
-    }
+    //protected void CreateChampionship()
+    //{
+    //    ChampionshipService.AddChampionship(NewChampionship, newParticipants);
+    //    NavigationManager.NavigateTo("AllChampionship/GenerateChampionShip/", true);
+    //}
     void cancel()
     {
 
@@ -132,17 +133,26 @@
         newParticipants.Remove(part);
         ParticipantsGrid.Reload();
     }
-    protected void addResult(Participants Particip)
+    //protected void addResult(Participants Particip)
+    //{
+    //    int result =(time.Value.Minute*60) + time.Value.Second;
+    //    var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Particip.Id, (int)str);
+    //    newChampionShipwithRacing.Id = CSDID;
+    //    newChampionShipwithRacing.Result = result;
+    //    ChampionshipService.AddNewResults(newChampionShipwithRacing);
+    //}
+    void OnChange(DateTime? value, string name, string format)
     {
-        int result =(time.Value.Minute*60) + time.Value.Second;
-        var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Particip.Id, (int)str);
+        time = value;
+        var Partyies = Party;
+        int result = (time.Value.Minute * 60) + time.Value.Second;
+        var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Partyies.Id, (int)str);
         newChampionShipwithRacing.Id = CSDID;
         newChampionShipwithRacing.Result = result;
         ChampionshipService.AddNewResults(newChampionShipwithRacing);
     }
-    void OnChange(DateTime? value, string name, string format)
+    void DateRender(DateRenderEventArgs args)
     {
-        time = value;
+        args.Disabled = dates.Contains(args.Date);
     }
-
 }
