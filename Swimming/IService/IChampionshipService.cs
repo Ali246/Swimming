@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Swimming.IService
 {
-   public interface IChampionshipService
-   {
+    public interface IChampionshipService
+    {
         #region Champions
         Task<List<Championship>> GetChampionship();
         IEnumerable<ChampionshipDetails> GetChampionshipDetails(int ChampionshipId);
@@ -21,14 +21,17 @@ namespace Swimming.IService
         Task<int> AddChampionshipRacingDetails(IEnumerable<int> SelectedchampiRacing, int ChampionId, int PartiID);
         Task DeleteChampionship(Championship Championships);
         Task<List<Racing>> GetRacingOfCS(int ChampionShipId);
-       List<Participants> GetPartiOfRac(int RacingId, int ChampionId);
+        PartiWLastResult[] GetPartiOfRac(int RacingId, int ChampionId);
         Task DeleteChampionshipwithRa(int ChampionshipId, Participants Participants);
         int AddNewParti(int ChampionshipId, int newParticipantId);
         int GetChampionRacingDetailsUpdate(int ChampionId, int PartiId, int RacingId);
         Task<int> AddNewResults(ChampionShipwithRacing newChampionShipwithRacing);
-        Task<AllRacingData[]> GetResultAsync();
-        Task<AllRacingDataFins[]> GetResultFinsAsync();
+        Task<AllRacingData[]> GetResultAsync(int ChampionId);
+        Task<AllRacingDataFins[]> GetResultFinsAsync(int ChampionId);
         int Addfinal(int ChampionId);
+        ResultOfRacingFree[] GetPointsFreeAsync(int ChampionId);
+        ResultOfRacingFins[] GetPointsFinsAsync(int ChampionId);
+        List<Championship> GetNewChampionship();
         #endregion
     }
 }

@@ -1,0 +1,110 @@
+﻿@attribute [Authorize]
+@page "/AllChampionship/PointsOfFree"
+@using Swimming.Data
+@inject Swimming.IService.IChampionshipService  ChampionshipService
+@inject Swimming.IService.IReportService  ReportService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.EntityFrameworkCore
+<div class="titleicon">
+    <span class="oi oi-star" aria-hidden="true"></span>
+    <h1>نقاط السباقات الحرة</h1>
+</div>
+<AuthorizeView Context="AuthorizeContext">
+    <Authorized>
+
+        <br />
+
+        <RadzenCard>
+            @if (newChampionship == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+        <RadzenCard>
+            <div class="form-group col-4">
+                <label asp-for="RacingName" class="control-label">البطولات</label>
+                <RadzenDropDown AllowClear="true" TValue="int"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.StartsWith"
+                                AllowFiltering="true"
+                                Data="@newChampionship"
+                                TextProperty="ChampionshipName"
+                                ValueProperty="Id"
+                                Style="margin-bottom: 20px"
+                                Change="@(args => Change(args))"
+                                class="form-control" />
+            </div>
+        </RadzenCard>
+               
+                <RadzenGrid @ref="AllRacingDataGrid" AllowFiltering="true"
+                            AllowPaging="true" PageSize="1000"
+                            AllowSorting="true" EditMode="DataGridEditMode.Multiple"
+                            Data="@list" TItem="ResultOfRacingFree">
+                    <Columns>
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Name" Title="الاسم" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="CaptainOrOrganization" Title="الكابتن" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Gender" Title="الجنس" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Birthday" Title="تاريخ الميلاد">
+                            <Template Context="ResultOfRacingFree">
+                                @String.Format("{0:d}", ResultOfRacingFree.Birthday.Value.Year)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race1" Title="سبق 25 رجلين حرة" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race2" Title="سبق 25 رجلين باك" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race3" Title="سبق 25 حرة" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race4" Title="سبق 25 باك" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race5" Title="سبق 25 صدر" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race6" Title="سبق 25 دولفين" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race7" Title="سبق 100 متنوع" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race8" Title="سبق 50 حرة" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race9" Title="سبق 50 باك" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race10" Title="سبق 50 صدر" />
+                        <RadzenGridColumn TItem="ResultOfRacingFree" Property="Race11" Title="سبق 50 دولفين" />
+                    </Columns>
+                </RadzenGrid>
+            }
+        </RadzenCard>
+
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    RadzenGrid<ResultOfRacingFree> AllRacingDataGrid;
+    ResultOfRacingFree[] ResultsObjs;
+    List<Championship> newChampionship = new List<Championship>();
+    List<ResultOfRacingFree> list = new List<ResultOfRacingFree>();
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    newChampionship= await Task.Run(() => ChampionshipService.GetChampionship());
+    //    //ResultsObjs = await Task.Run(() => ChampionshipService.GetChampionship());
+    //    //list = new List<ResultOfRacingFree>(ResultsObjs);
+    //}
+    protected override void OnInitialized()
+    {
+        newChampionship =  ChampionshipService.GetNewChampionship();
+    }
+
+    void CellRender(CellRenderEventArgs<Championship> args)
+    {
+        if (args.Column.Property == "EditChamp")
+        {
+            args.Attributes.Add("style", $"visibility: {(args.Data.Date < DateTime.Now ? "hidden" : "visible")};");
+        }
+    }
+    void Change(object value)
+    {
+        if ((int)value != 0)
+        {
+
+            var ResultsObjs = ChampionshipService.GetPointsFreeAsync((int)value);
+            //ResultsObjs = await Task.Run(() => ChampionshipService.GetChampionship());
+            list = new List<ResultOfRacingFree>(ResultsObjs);
+        }
+
+    }
+}

@@ -18,13 +18,27 @@
         <br />
 
         <RadzenCard>
-            @if (ResultsObjs == null)
+            @if (newChampionship == null)
             {
                 <p><em>Loading...</em></p>
             }
             else
             {
-           
+        <RadzenCard>
+            <div class="form-group col-4">
+                <label asp-for="RacingName" class="control-label">البطولات</label>
+                <RadzenDropDown AllowClear="true" TValue="int"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.StartsWith"
+                                AllowFiltering="true"
+                                Data="@newChampionship"
+                                TextProperty="ChampionshipName"
+                                ValueProperty="Id"
+                                Style="margin-bottom: 20px"
+                                Change="@(args => Change(args))"
+                                class="form-control" />
+            </div>
+        </RadzenCard>
                 <RadzenGrid @ref="AllRacingDataGrid" AllowFiltering="true"
                             AllowPaging="true" PageSize="1000"
                             AllowSorting="true" EditMode="DataGridEditMode.Multiple"
@@ -60,20 +74,27 @@
 @code {
     RadzenGrid<AllRacingData> AllRacingDataGrid;
     AllRacingData[] ResultsObjs;
+    List<Championship> newChampionship = new List<Championship>();
     List<AllRacingData> list = new List<AllRacingData>();
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-
-        ResultsObjs = await Task.Run(() => ChampionshipService.GetResultAsync());
-        list = new List<AllRacingData>(ResultsObjs);
+        newChampionship = ChampionshipService.GetNewChampionship();
     }
-
-
     void CellRender(CellRenderEventArgs<Championship> args)
     {
         if (args.Column.Property == "EditChamp")
         {
             args.Attributes.Add("style", $"visibility: {(args.Data.Date < DateTime.Now ? "hidden" : "visible")};");
         }
-    }  
+    }
+    async Task Change(object value)
+    {
+        if ((int)value != 0)
+        {
+
+            ResultsObjs = await Task.Run(() => ChampionshipService.GetResultAsync((int)value));
+            list = new List<AllRacingData>(ResultsObjs);
+        }
+
+    }
 }

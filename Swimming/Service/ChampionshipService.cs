@@ -24,12 +24,7 @@ namespace Swimming.Service
         public async Task<List<Championship>> GetChampionship()
         {
             if (_db != null)
-            {
-                AllRacingData[] custsObjs;
-
-                custsObjs = _db.AllRacingDataTBL.FromSqlRaw
-                            ("EXECUTE dbo.GetAllRacingData")
-                .ToArray();
+            {         
                 return await _db.CSChampionships.Where(Par => Par.DeletedDate == null).ToListAsync();
             }
 
@@ -189,15 +184,17 @@ namespace Swimming.Service
 
             return null;
         }
-        public  List<Participants> GetPartiOfRac(int RacingId, int ChampionId)
+        public PartiWLastResult[] GetPartiOfRac(int RacingId, int ChampionId)
         {
             if (_db != null)
             {
-                var GetCSDId = _db.CSDChampionshipDetails.Where(CS => CS.ChampionshipId == ChampionId).ToList();
-                var GETRCIDs = _db.CWRChampionShipwithRacing.Where(r =>r.RacingId== RacingId).ToList();
-                var GetPartiId = (from x in GetCSDId join t in GETRCIDs on x.Id equals t.ChampionshipDetailsId select x).Select(z=>z.ParticipantId).ToList();
-                var GetParti=  _db.Participant.Where(r => GetPartiId.Contains(r.Id)).ToList();
-                return GetParti;
+                SqlParameter param1 = new SqlParameter("@RacingId", RacingId);
+                SqlParameter param2 = new SqlParameter("@ChampionshipId", ChampionId);
+                PartiWLastResult[] ResultsFreePoints;
+                ResultsFreePoints = _db.PartiWLastResults.FromSqlRaw
+                           ("EXECUTE dbo.GetPartiWithlastResults @RacingId,@ChampionshipId", param1, param2)
+                    .ToArray();
+                return ResultsFreePoints;
             }
 
             return null;
@@ -256,24 +253,25 @@ namespace Swimming.Service
             }
             return 0;
         }
-        public async Task<AllRacingData[]> GetResultAsync()
+        public async Task<AllRacingData[]> GetResultAsync(int ChampionId)
         {
             AllRacingData[] ResultsObjs;
-
+            SqlParameter param1 = new SqlParameter("@ChampionId", ChampionId);
             ResultsObjs = _db.AllRacingDataTBL.FromSqlRaw
-                        ("EXECUTE dbo.GetAllRacingData")
+                        ("EXECUTE dbo.GetAllRacingData @ChampionId", param1)
                 .ToArray();
             return ResultsObjs;
         }
-        public async Task<AllRacingDataFins[]> GetResultFinsAsync()
+        public async Task<AllRacingDataFins[]> GetResultFinsAsync(int ChampionId)
         {
             AllRacingDataFins[] ResultsFinsObjs;
-
+            SqlParameter param1 = new SqlParameter("@ChampionId", ChampionId);
             ResultsFinsObjs = _db.AllRacingFindDataTBL.FromSqlRaw
-                        ("EXECUTE dbo.GetAllRacingDataFins")
+                        ("EXECUTE dbo.GetAllRacingDataFins @ChampionId", param1)
                 .ToArray();
             return ResultsFinsObjs;
         }
+
         public  int Addfinal(int ChampionId)
         {
             if (_db != null)
@@ -329,6 +327,36 @@ namespace Swimming.Service
                 return 1;
             }
             return 0;
+        }
+        public ResultOfRacingFree[] GetPointsFreeAsync(int ChampionId)
+        {
+
+            SqlParameter param1 = new SqlParameter("@RacingType", 1);
+            SqlParameter param2 = new SqlParameter("@ChampionId", ChampionId);
+            ResultOfRacingFree[] ResultsFreePoints;
+            ResultsFreePoints = _db.ResultOfRacingFrees.FromSqlRaw
+                       ("EXECUTE dbo.GetTheResultOfFree @RacingType,@ChampionId", param1, param2)
+                .ToArray();
+            return ResultsFreePoints;
+        }
+        public ResultOfRacingFins[] GetPointsFinsAsync(int ChampionId)
+        {
+            SqlParameter param1 = new SqlParameter("@RacingType", 2);
+            SqlParameter param2 = new SqlParameter("@ChampionId", ChampionId);
+            ResultOfRacingFins[] ResultsFinsPoints;
+            ResultsFinsPoints = _db.ResultOfRacingFin.FromSqlRaw
+                        ("EXECUTE dbo.GetTheResultOfFree @RacingType,@ChampionId", param1, param2)
+                .ToArray();
+            return ResultsFinsPoints;
+        }
+        public List<Championship> GetNewChampionship()
+        {
+            if (_db != null)
+            {
+                return  _db.CSChampionships.Where(Par => Par.DeletedDate == null).ToList();
+            }
+
+            return null;
         }
         #endregion    
     }

@@ -41,21 +41,23 @@
                     <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
                                 AllowPaging="true" PageSize="1000" 
                                 AllowSorting="true" EditMode="DataGridEditMode.Single"
-                                Data="@newParticipants" TItem="Participants" Style="width:700px !important" RowSelect="@(args => Party = args)">
+                                Data="@newParticipants" TItem="PartiWLastResult" Style="width:700px !important" RowSelect="@(args => Party = args)">
                         <Columns>
-                            <RadzenGridColumn TItem="Participants" Property="Name" Title="Name" />
-                            <RadzenGridColumn TItem="Participants" Property="Birthday" Title="تاريخ الميلاد">
-                                <Template Context="Participants">
-                                    @String.Format("{0:d}", Participants.Birthday.Value.Year)
+                            <RadzenGridColumn TItem="PartiWLastResult" Property="Name" Title="Name" />
+                            <RadzenGridColumn TItem="PartiWLastResult" Property="Birthday" Title="تاريخ الميلاد">
+                                <Template Context="PartiWLastResult">
+                                    @String.Format("{0:d}", PartiWLastResult.Birthday.Value.Year)
                                 </Template>
                             </RadzenGridColumn>
-                            <RadzenGridColumn Width="150px" TItem="Participants" Property="al:web:url" Title="مسح" Filterable="false">
-                                <Template Context="Participants">
+                            <RadzenGridColumn TItem="PartiWLastResult" Property="CaptainOrOrganization" Title="الكابتن/الهيئه" />
+                            <RadzenGridColumn TItem="PartiWLastResult" Property="Result" Title="اخر نتيجة" />
+                            <RadzenGridColumn Width="150px" TItem="PartiWLastResult" Property="al:web:url" Title="مسح" Filterable="false">
+                                <Template Context="PartiWLastResult">
                                     <RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
                                                       ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
                                                       SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />
                                 </Template>
-                            </RadzenGridColumn>                           
+                            </RadzenGridColumn>
                         </Columns>
 
                     </RadzenGrid>
@@ -73,13 +75,13 @@
 @code {
     [Parameter]
     public string ChampionShId { get; set; }
-    RadzenGrid<Participants> ParticipantsGrid;
+    RadzenGrid<PartiWLastResult> ParticipantsGrid;
     ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
-    List<Participants> newParticipants = new List<Participants>();
+    List<PartiWLastResult> newParticipants = new List<PartiWLastResult>();
     List<Racing> allRacingofchamp= new List<Racing>();
     Participants selectedParticipants = new Participants();
     List<Racing> Racings;
-    Participants Party;
+    PartiWLastResult Party;
     IEnumerable<Racing> customers;
     public DateTime? time { get; set; }
     Championship NewChampionship = new Championship();
@@ -111,7 +113,7 @@
             str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
             var GetParti= ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
             // selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
-            newParticipants= GetParti;
+            newParticipants = new List<PartiWLastResult>(GetParti);
             customers = Racings.AsEnumerable();
             ParticipantsGrid.Reload();
         }
@@ -126,7 +128,7 @@
         public object participateIdz { get; set; }
         public object Racingz { get; set; }
     }
-    void Delete(Participants part)
+    void Delete(PartiWLastResult part)
     {
 
         newParticipants.Remove(part);
@@ -154,7 +156,7 @@
     {
         args.Disabled = dates.Contains(args.Date);
     }
-  void TheEnd()
+    void TheEnd()
     {
         ChampionshipService.Addfinal(Convert.ToInt32(ChampionShId));
         //newParticipants.Remove(part);

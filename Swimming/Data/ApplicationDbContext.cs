@@ -32,7 +32,9 @@ namespace Swimming.Data
         public DbSet<AllRacingDataFins> AllRacingFindDataTBL { get; set; }
         public DbSet<RACWITHCH> RACWITHCHTBL { get; set; }
         public DbSet<RacingAlias> RacingAliasTBL { get; set; }
-        
 
+        public DbSet<ResultOfRacingFree> ResultOfRacingFrees { get; set; }
+        public DbSet<ResultOfRacingFins> ResultOfRacingFin { get; set; }
+        public DbSet<PartiWLastResult> PartiWLastResults { get; set; }
     }
 }
