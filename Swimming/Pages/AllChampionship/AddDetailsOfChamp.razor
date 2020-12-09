@@ -61,18 +61,11 @@
         }
     }
     protected void CreateRacing()
-    {
-        var countOfselected = selectionofRacing.Count();
-        if (countOfselected > 5)
-        {
-            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "اقصي عدد من السباقات للمشارك هو ٥", Duration = 4000 });
-        }
-        else
-        {
+    {      
             ChampionshipService.AddChampionshipRacingDetails(selectionofRacing, Convert.ToInt32(championDetailsID), Convert.ToInt32(ParticiID));
             // NavigationManager.NavigateTo("AllChampionship/AddRacingtoParticiOfChampionship/" + championDetailsID, true);
             ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "تمت الاضافة بنجاح", Duration = 4000 });
-        }
+
 
     }
 

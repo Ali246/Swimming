@@ -31,6 +31,8 @@ namespace Swimming.Data
         public DbSet<AllRacingData> AllRacingDataTBL { get; set; }
         public DbSet<AllRacingDataFins> AllRacingFindDataTBL { get; set; }
         public DbSet<RACWITHCH> RACWITHCHTBL { get; set; }
+        public DbSet<RacingAlias> RacingAliasTBL { get; set; }
         
+
     }
 }
