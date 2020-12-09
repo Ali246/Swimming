@@ -5,7 +5,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
+using Radzen;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Swimming.Service
 {
@@ -21,6 +25,11 @@ namespace Swimming.Service
         {
             if (_db != null)
             {
+                AllRacingData[] custsObjs;
+
+                custsObjs = _db.AllRacingDataTBL.FromSqlRaw
+                            ("EXECUTE dbo.GetAllRacingData")
+                .ToArray();
                 return await _db.CSChampionships.Where(Par => Par.DeletedDate == null).ToListAsync();
             }
 
@@ -31,6 +40,7 @@ namespace Swimming.Service
             if (_db != null)
             {
                 return _db.CSDChampionshipDetails.Where(CSD => CSD.ChampionshipId == ChampionshipId).ToList();
+
             }
 
             return null;
@@ -96,6 +106,7 @@ namespace Swimming.Service
         {
             if (_db != null)
             {
+
                 return _db.CSChampionships.Find(Id); ;
             }
 
@@ -223,6 +234,7 @@ namespace Swimming.Service
         {
             if (_db != null)
             {
+            
                 if (ChampionId != 0 && PartiId != 0)
                 {
                     var IDOfCSD = _db.CSDChampionshipDetails.Where(CSD => CSD.ChampionshipId == ChampionId && CSD.ParticipantId == PartiId).FirstOrDefault().Id;
@@ -240,6 +252,80 @@ namespace Swimming.Service
                 _db.CWRChampionShipwithRacing.Update(GetCWR);
                 //Commit the transaction
                 _db.SaveChanges();
+                return 1;
+            }
+            return 0;
+        }
+        public async Task<AllRacingData[]> GetResultAsync()
+        {
+            AllRacingData[] ResultsObjs;
+
+            ResultsObjs = _db.AllRacingDataTBL.FromSqlRaw
+                        ("EXECUTE dbo.GetAllRacingData")
+                .ToArray();
+            return ResultsObjs;
+        }
+        public async Task<AllRacingDataFins[]> GetResultFinsAsync()
+        {
+            AllRacingDataFins[] ResultsFinsObjs;
+
+            ResultsFinsObjs = _db.AllRacingFindDataTBL.FromSqlRaw
+                        ("EXECUTE dbo.GetAllRacingDataFins")
+                .ToArray();
+            return ResultsFinsObjs;
+        }
+        public  int Addfinal(int ChampionId)
+        {
+            if (_db != null)
+            {
+                List<int> Gender=new List<int>();
+                Gender.Add(0);
+                Gender.Add(1);
+                var RacingId = _db.Racings.ToList().Select(r=>r.Id).ToList();
+                List<int> YEARS = new List<int>();
+                //for (int i = 1990; i < DateTime.Now.Year; i++)
+                //{
+                //    YEARS.Add(i);
+                //}
+                foreach (var RacingIds in RacingId)
+                {
+                    YEARS = _db.RacingDetail.Where(s => s.RacingId == RacingIds).Select(rd => rd.Year).ToList();
+                    foreach (var Genders in Gender)
+                    {
+                       
+                        foreach (var YEAR in YEARS)
+                        {
+                            SqlParameter param1 = new SqlParameter("@Year", YEAR);
+                            SqlParameter param2 = new SqlParameter("@Gender", Genders);
+                            SqlParameter param3 = new SqlParameter("@RacingId", RacingIds);
+                            SqlParameter param4 = new SqlParameter("@ChampionshipId", ChampionId);
+                            RACWITHCH[] RACWITHCHObjs;
+
+                            RACWITHCHObjs = _db.RACWITHCHTBL.FromSqlRaw
+                                        ("EXECUTE dbo.Getchampionwithracing @Year,@Gender,@RacingId,@ChampionshipId", param1, param2, param3, param4)
+                                .ToArray();
+                            if (RACWITHCHObjs.Length !=0)
+                            {
+                                ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
+                                int count = 0;
+                                foreach (var item in RACWITHCHObjs)
+                                {
+                                    count = count+1;
+                                    var x = _db.CWRChampionShipwithRacing.Find(item.Id);
+
+                                    x.placeNo = count;
+                                    x.Points = count == 1 ? 40 : count == 2 ? 30 : count == 3 ? 20 : 0;
+                                    _db.Update(x);
+                                    _db.SaveChanges();
+                                }
+                            }
+                          
+                        }
+                       
+                    }
+
+                  
+                }
                 return 1;
             }
             return 0;

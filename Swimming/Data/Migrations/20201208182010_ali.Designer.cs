@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swimming.Data;
 
 namespace Swimming.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201208182010_ali")]
+    partial class ali
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,87 +228,45 @@ namespace Swimming.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("Birthday")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CaptainOrOrganization")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race1")
-                        .HasColumnType("int");
+                    b.Property<string>("Race1")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race10")
-                        .HasColumnType("int");
+                    b.Property<string>("Race10")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race11")
-                        .HasColumnType("int");
+                    b.Property<string>("Race11")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race2")
-                        .HasColumnType("int");
+                    b.Property<string>("Race2")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race3")
-                        .HasColumnType("int");
+                    b.Property<string>("Race3")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race4")
-                        .HasColumnType("int");
+                    b.Property<string>("Race4")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race5")
-                        .HasColumnType("int");
+                    b.Property<string>("Race5")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race6")
-                        .HasColumnType("int");
+                    b.Property<string>("Race6")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race7")
-                        .HasColumnType("int");
+                    b.Property<string>("Race7")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race8")
-                        .HasColumnType("int");
+                    b.Property<string>("Race8")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Race9")
-                        .HasColumnType("int");
+                    b.Property<string>("Race9")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("AllRacingDataTBL");
-                });
-
-            modelBuilder.Entity("Swimming.Data.AllRacingDataFins", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime?>("Birthday")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CaptainOrOrganization")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Race21")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Race22")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Race23")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Race24")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Race25")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AllRacingFindDataTBL");
                 });
 
             modelBuilder.Entity("Swimming.Data.CaptainOrOrganization", b =>
@@ -348,17 +308,11 @@ namespace Swimming.Data.Migrations
                     b.Property<int>("ChampionshipDetailsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
                     b.Property<int>("RacingId")
                         .HasColumnType("int");
 
                     b.Property<double>("Result")
                         .HasColumnType("float");
-
-                    b.Property<int>("placeNo")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -484,24 +438,6 @@ namespace Swimming.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Point");
-                });
-
-            modelBuilder.Entity("Swimming.Data.RACWITHCH", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Result")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RACWITHCHTBL");
                 });
 
             modelBuilder.Entity("Swimming.Data.Racing", b =>

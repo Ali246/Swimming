@@ -13,5 +13,7 @@ namespace Swimming.Data
         public int ChampionshipDetailsId { get; set; }
         public int RacingId { get; set; }
         public double Result { get; set; }
+        public int placeNo { get; set; }
+        public int Points { get; set; }
     }
 }

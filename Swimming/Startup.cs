@@ -48,6 +48,7 @@ namespace Swimming
             services.AddTransient<IParticipantSevice, ParticipantService>();
             services.AddTransient<IRacingService, RacingService>();
             services.AddTransient<IChampionshipService, ChampionshipService>();
+            services.AddTransient<IReportService, ReportService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

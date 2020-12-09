@@ -91,8 +91,8 @@
         {
             allGender.Add(new Gender() { Id = 0, Type = "ذكر" });
             allGender.Add(new Gender() { Id = 1, Type = "انثي" });
-            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 0, TypesOfParticipateName = "كبار " });
-            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 1, TypesOfParticipateName = "صغار  " });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 0, TypesOfParticipateName = "صغار" });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 1, TypesOfParticipateName = "كبار  " });
             allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 2, TypesOfParticipateName = "احتياجات خاصة " });
             allCaptainOrOrganization = await Task.Run(() => ParticipantSevice.GetAllCaptain());
         }

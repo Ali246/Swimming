@@ -26,6 +26,9 @@ namespace Swimming.IService
         int AddNewParti(int ChampionshipId, int newParticipantId);
         int GetChampionRacingDetailsUpdate(int ChampionId, int PartiId, int RacingId);
         Task<int> AddNewResults(ChampionShipwithRacing newChampionShipwithRacing);
+        Task<AllRacingData[]> GetResultAsync();
+        Task<AllRacingDataFins[]> GetResultFinsAsync();
+        int Addfinal(int ChampionId);
         #endregion
     }
 }

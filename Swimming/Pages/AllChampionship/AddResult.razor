@@ -39,30 +39,28 @@
                                         class="form-control" />
                     </div>
                     <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
-                                AllowPaging="true" PageSize="10" 
+                                AllowPaging="true" PageSize="1000" 
                                 AllowSorting="true" EditMode="DataGridEditMode.Single"
                                 Data="@newParticipants" TItem="Participants" Style="width:700px !important" RowSelect="@(args => Party = args)">
                         <Columns>
                             <RadzenGridColumn TItem="Participants" Property="Name" Title="Name" />
+                            <RadzenGridColumn TItem="Participants" Property="Birthday" Title="تاريخ الميلاد">
+                                <Template Context="Participants">
+                                    @String.Format("{0:d}", Participants.Birthday.Value.Year)
+                                </Template>
+                            </RadzenGridColumn>
                             <RadzenGridColumn Width="150px" TItem="Participants" Property="al:web:url" Title="مسح" Filterable="false">
                                 <Template Context="Participants">
                                     <RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
-                                                      ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss"  ShowTimeOkButton="false"
+                                                      ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
                                                       SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />
                                 </Template>
-                            </RadzenGridColumn>
-                            @*<RadzenGridColumn Width="100px" TItem="Participants" Property="al:web:url" Title="+" Filterable="false">
-                                <Template Context="Participants">
-                                    <RadzenButton Text="" Icon="+" Click="@(args => addResult(Participants) )" id="bnt-style-general">
-
-                                    </RadzenButton>
-                                </Template>
-                            </RadzenGridColumn>*@
+                            </RadzenGridColumn>                           
                         </Columns>
 
                     </RadzenGrid>
                     <div class="form-group">
-                        @*<button type="submit" class="btn btn-default">حفظ</button>*@
+                        <button type="submit" class="btn btn-default"  @onclick="() => TheEnd()">نهاية البطولة</button>
                         <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
                     </div>
                 </div>
@@ -93,6 +91,7 @@
     {
         allRacingofchamp = await Task.Run(() => ChampionshipService.GetRacingOfCS(Convert.ToInt32(ChampionShId)));
         NewChampionship = await Task.Run(() => ChampionshipService.GetChampionshipbyId(Convert.ToInt32(ChampionShId)));
+
     }
     //protected void CreateChampionship()
     //{
@@ -154,5 +153,11 @@
     void DateRender(DateRenderEventArgs args)
     {
         args.Disabled = dates.Contains(args.Date);
+    }
+  void TheEnd()
+    {
+        ChampionshipService.Addfinal(Convert.ToInt32(ChampionShId));
+        //newParticipants.Remove(part);
+        //ParticipantsGrid.Reload();
     }
 }

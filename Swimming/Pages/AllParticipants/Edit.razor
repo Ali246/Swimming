@@ -87,18 +87,18 @@
         List<TypesOfParticipate> allTypesOfParticipate = new List<TypesOfParticipate>();
         protected override async Task OnInitializedAsync()
         {
-            allGender.Add(new Gender() { Id = 0, Type = "Male" });
-            allGender.Add(new Gender() { Id = 1, Type = "Female" });
-            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 0, TypesOfParticipateName = "Senior " });
-            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 1, TypesOfParticipateName = "junior  " });
-            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 2, TypesOfParticipateName = "special needs " });
+            allGender.Add(new Gender() { Id = 0, Type = "ذكر" });
+            allGender.Add(new Gender() { Id = 1, Type = "انثي" });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 0, TypesOfParticipateName = "صغار" });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 1, TypesOfParticipateName = "كبار  " });
+            allTypesOfParticipate.Add(new TypesOfParticipate() { Id = 2, TypesOfParticipateName = "احتياجات خاصة " });
             allCaptainOrOrganization = await Task.Run(() => ParticipantSevice.GetAllCaptain());
             NewParticipants = ParticipantSevice.GetParticipantbyId(Convert.ToInt32(PartiId));
         }
         protected void UpdateParticipat()
         {
-            NewParticipants.GenderName = NewParticipants.Gender == 0 ? "Male" : NewParticipants.Gender == 1 ? "Female" : null;
-            NewParticipants.TypeOfParticipantName = NewParticipants.TypeOfParticipant == 0 ? "Senior " : NewParticipants.TypeOfParticipant == 1 ? "junior  " : NewParticipants.TypeOfParticipant == 2 ? "special needs " : null;
+            NewParticipants.GenderName = NewParticipants.Gender == 0 ? "ذكر" : NewParticipants.Gender == 1 ? "انثي" : null;
+            NewParticipants.TypeOfParticipantName = NewParticipants.TypeOfParticipant == 0 ? "كبار " : NewParticipants.TypeOfParticipant == 1 ? "صغار  " : NewParticipants.TypeOfParticipant == 2 ? "احتياجات خاصة " : null;
             ParticipantSevice.UpdateParticipant(NewParticipants);
             NavigationManager.NavigateTo("AllParticipants/MyParticipant/", true);
         }

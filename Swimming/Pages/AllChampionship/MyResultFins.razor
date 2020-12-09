@@ -1,0 +1,68 @@
+﻿@attribute [Authorize]
+@page "/AllChampionship/MyResultFins"
+@using Swimming.Data
+@inject Swimming.IService.IChampionshipService  ChampionshipService
+@inject Swimming.IService.IReportService  ReportService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.EntityFrameworkCore
+<div class="titleicon">
+    <span class="oi oi-star" aria-hidden="true"></span>
+    <h1>النتائج السباقات زعانف</h1>
+</div>
+<AuthorizeView Context="AuthorizeContext">
+    <Authorized>
+
+        <br />
+        <RadzenCard>
+            @if (ResultsObjs == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                <RadzenGrid @ref="AllRacingDataGrid" AllowFiltering="true"
+                            AllowPaging="false" 
+                            AllowSorting="true" EditMode="DataGridEditMode.Multiple"
+                            Data="@list" TItem="AllRacingDataFins">
+                    <Columns>
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Name" Title="الاسم" />
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="CaptainOrOrganization" Title="الكابتن" />
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Birthday" Title="تاريخ الميلاد">
+                            <Template Context="AllRacingDataFins">
+                                @String.Format("{0:d}", AllRacingDataFins.Birthday.Value.Year)
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Race21" Title="سبق 25 حرة بالزعانف" />
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Race22" Title="سبق 50 حرة بالزعانف" />
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Race23" Title="سبق 100 حرة بالزعانف" />
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Race24" Title="سبق 50 مونو" />
+                        <RadzenGridColumn TItem="AllRacingDataFins" Property="Race25" Title="سبق 100 مونو" />
+                    </Columns>
+                </RadzenGrid>
+            }
+        </RadzenCard>
+    </Authorized>
+</AuthorizeView>
+@code {
+    RadzenGrid<AllRacingDataFins> AllRacingDataGrid;
+    AllRacingDataFins[] ResultsObjs;
+    List<AllRacingDataFins> list = new List<AllRacingDataFins>();
+    protected override async Task OnInitializedAsync()
+    {
+
+        ResultsObjs = await Task.Run(() => ChampionshipService.GetResultFinsAsync());
+        list = new List<AllRacingDataFins>(ResultsObjs);
+    }
+
+
+    void CellRender(CellRenderEventArgs<Championship> args)
+    {
+        if (args.Column.Property == "EditChamp")
+        {
+            args.Attributes.Add("style", $"visibility: {(args.Data.Date < DateTime.Now ? "hidden" : "visible")};");
+        }
+    }
+}
