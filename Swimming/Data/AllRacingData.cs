@@ -9,6 +9,7 @@ namespace Swimming.Data
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Gender { get; set; }
         public string CaptainOrOrganization { get; set; }
         public DateTime? Birthday { get; set; }       
         public int? Race1 { get; set; }
