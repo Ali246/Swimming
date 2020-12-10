@@ -308,13 +308,16 @@ namespace Swimming.Service
                                 int count = 0;
                                 foreach (var item in RACWITHCHObjs)
                                 {
-                                    count = count+1;
-                                    var x = _db.CWRChampionShipwithRacing.Find(item.Id);
-
-                                    x.placeNo = count;
-                                    x.Points = count == 1 ? 40 : count == 2 ? 30 : count == 3 ? 20 : 0;
-                                    _db.Update(x);
-                                    _db.SaveChanges();
+                                    if (item.Result !=0)
+                                    {
+                                        count = count + 1;
+                                        var x = _db.CWRChampionShipwithRacing.Find(item.Id);
+                                        x.placeNo = count;
+                                        x.Points = count == 1 ? 40 : count == 2 ? 30 : count == 3 ? 20 : 0;
+                                        _db.Update(x);
+                                        _db.SaveChanges();
+                                    }
+                                   
                                 }
                             }
                           
