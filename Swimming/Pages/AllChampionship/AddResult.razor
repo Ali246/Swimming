@@ -7,12 +7,13 @@
 @inject Swimming.IService.IParticipantSevice ParticipantSevice
 @inject Swimming.IService.IRacingService RacingService
 @inject NavigationManager NavigationManager
+@inject NotificationService notificationService
 <h1>اضافة نتائج </h1>
 <hr />
 <RadzenCard>
     <AuthorizeView Context="authContext">
         <Authorized>
-            <EditForm Model="@NewChampionship"  Context="formContext">
+            <EditForm Model="@NewChampionship" Context="formContext">
                 <DataAnnotationsValidator />
                 <div class="col-md-4">
                     <div class="form-group">
@@ -39,11 +40,12 @@
                                         class="form-control" />
                     </div>
                     <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
-                                AllowPaging="true" PageSize="1000" 
+                                AllowPaging="true" PageSize="1000"
                                 AllowSorting="true" EditMode="DataGridEditMode.Single"
                                 Data="@newParticipants" TItem="PartiWLastResult" Style="width:700px !important" RowSelect="@(args => Party = args)">
                         <Columns>
-                            <RadzenGridColumn TItem="PartiWLastResult" Property="Name" Title="Name" />
+                            <RadzenGridColumn TItem="PartiWLastResult" Property="Name" Title="الاسم" />
+                            <RadzenGridColumn TItem="PartiWLastResult" Property="GenderName" Title="الجنس" />
                             <RadzenGridColumn TItem="PartiWLastResult" Property="Birthday" Title="تاريخ الميلاد">
                                 <Template Context="PartiWLastResult">
                                     @String.Format("{0:d}", PartiWLastResult.Birthday.Value.Year)
@@ -51,7 +53,7 @@
                             </RadzenGridColumn>
                             <RadzenGridColumn TItem="PartiWLastResult" Property="CaptainOrOrganization" Title="الكابتن/الهيئه" />
                             <RadzenGridColumn TItem="PartiWLastResult" Property="Result" Title="اخر نتيجة" />
-                            <RadzenGridColumn Width="150px" TItem="PartiWLastResult" Property="al:web:url" Title="مسح" Filterable="false">
+                            <RadzenGridColumn Width="150px" TItem="PartiWLastResult" Property="al:web:url" Title="اضافة نتيجة" Filterable="false">
                                 <Template Context="PartiWLastResult">
                                     <RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
                                                       ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
@@ -62,7 +64,7 @@
 
                     </RadzenGrid>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-default"  @onclick="() => TheEnd()">نهاية البطولة</button>
+                        <button type="submit" class="btn btn-default" @onclick="() => TheEnd()">نهاية البطولة</button>
                         <button class="btn" type="button" @onclick="() => cancel()">إلغاء</button>
                     </div>
                 </div>
@@ -78,7 +80,7 @@
     RadzenGrid<PartiWLastResult> ParticipantsGrid;
     ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
     List<PartiWLastResult> newParticipants = new List<PartiWLastResult>();
-    List<Racing> allRacingofchamp= new List<Racing>();
+    List<Racing> allRacingofchamp = new List<Racing>();
     Participants selectedParticipants = new Participants();
     List<Racing> Racings;
     PartiWLastResult Party;
@@ -108,10 +110,10 @@
 
     void Change(object value)
     {
-        if ((int)value !=0)
+        if ((int)value != 0)
         {
             str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
-            var GetParti= ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
+            var GetParti = ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
             // selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
             newParticipants = new List<PartiWLastResult>(GetParti);
             customers = Racings.AsEnumerable();
@@ -159,7 +161,13 @@
     void TheEnd()
     {
         ChampionshipService.Addfinal(Convert.ToInt32(ChampionShId));
+        ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "تمت انهاء البطولة", Duration = 4000 });
         //newParticipants.Remove(part);
         //ParticipantsGrid.Reload();
+    }
+    void ShowNotification(NotificationMessage message)
+    {
+        notificationService.Notify(message);
+
     }
 }

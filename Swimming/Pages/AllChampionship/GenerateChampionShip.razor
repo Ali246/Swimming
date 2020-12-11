@@ -116,9 +116,6 @@
     }
     void CellRender(CellRenderEventArgs<Championship> args)
     {
-        if (args.Column.Property == "EditChamp")
-        {
-            args.Attributes.Add("style", $"visibility: {(args.Data.Date < DateTime.Now ? "hidden" : "visible")};");
-        }
+      
     }
 }

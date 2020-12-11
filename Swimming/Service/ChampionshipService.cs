@@ -234,8 +234,8 @@ namespace Swimming.Service
             
                 if (ChampionId != 0 && PartiId != 0)
                 {
-                    var IDOfCSD = _db.CSDChampionshipDetails.Where(CSD => CSD.ChampionshipId == ChampionId && CSD.ParticipantId == PartiId).FirstOrDefault().Id;
-                    return _db.CWRChampionShipwithRacing.Where(CWR => CWR.ChampionshipDetailsId == IDOfCSD && CWR.RacingId== RacingId).Select(x => x.Id).FirstOrDefault();
+                    //var IDOfCSD = _db.CSDChampionshipDetails.Where(CSD => CSD.ChampionshipId == ChampionId && CSD.ParticipantId == PartiId).FirstOrDefault().Id;
+                    return _db.CWRChampionShipwithRacing.Find(PartiId).Id;
                 }
             }
             return 0;
@@ -280,11 +280,7 @@ namespace Swimming.Service
                 Gender.Add(0);
                 Gender.Add(1);
                 var RacingId = _db.Racings.ToList().Select(r=>r.Id).ToList();
-                List<int> YEARS = new List<int>();
-                //for (int i = 1990; i < DateTime.Now.Year; i++)
-                //{
-                //    YEARS.Add(i);
-                //}
+                List<int> YEARS = new List<int>();              
                 foreach (var RacingIds in RacingId)
                 {
                     YEARS = _db.RacingDetail.Where(s => s.RacingId == RacingIds).Select(rd => rd.Year).ToList();
@@ -306,18 +302,23 @@ namespace Swimming.Service
                             {
                                 ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
                                 int count = 0;
+                                double last = 0;
                                 foreach (var item in RACWITHCHObjs)
-                                {
-                                    if (item.Result !=0)
+                                {                                   
+                                    if (item.Result !=0) 
                                     {
-                                        count = count + 1;
+                                        count = count + 1;                                      
+                                        if (last == item.Result)
+                                        {
+                                            count = count - 1;
+                                        }                                                                            
                                         var x = _db.CWRChampionShipwithRacing.Find(item.Id);
                                         x.placeNo = count;
                                         x.Points = count == 1 ? 40 : count == 2 ? 30 : count == 3 ? 20 : 0;
                                         _db.Update(x);
                                         _db.SaveChanges();
-                                    }
-                                   
+                                        last = item.Result;
+                                    }                                   
                                 }
                             }
                           
