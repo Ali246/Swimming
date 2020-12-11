@@ -55,11 +55,13 @@
                             <RadzenGridColumn TItem="PartiWLastResult" Property="Result" Title="اخر نتيجة" />
                             <RadzenGridColumn Width="150px" TItem="PartiWLastResult" Property="al:web:url" Title="اضافة نتيجة" Filterable="false">
                                 <Template Context="PartiWLastResult">
-                                    <RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
+                                    <RadzenNumeric TValue="double" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss"))/>
+                                    @*<RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true" 
                                                       ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
-                                                      SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />
+                                                      SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />*@
                                 </Template>
                             </RadzenGridColumn>
+
                         </Columns>
 
                     </RadzenGrid>
@@ -144,14 +146,15 @@
     //    newChampionShipwithRacing.Result = result;
     //    ChampionshipService.AddNewResults(newChampionShipwithRacing);
     //}
-    void OnChange(DateTime? value, string name, string format)
+    void OnChange(double value, string name, string format)
     {
-        time = value;
+       // time = value;
         var Partyies = Party;
-        int result = (time.Value.Minute * 60) + time.Value.Second;
+       // int result = (time.Value.Minute * 60) + time.Value.Second;
+
         var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Partyies.Id, (int)str);
         newChampionShipwithRacing.Id = CSDID;
-        newChampionShipwithRacing.Result = result;
+        newChampionShipwithRacing.Result = value;
         ChampionshipService.AddNewResults(newChampionShipwithRacing);
     }
     void DateRender(DateRenderEventArgs args)

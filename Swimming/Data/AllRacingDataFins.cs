@@ -12,10 +12,10 @@ namespace Swimming.Data
         public string CaptainOrOrganization { get; set; }
         public string Gender { get; set; }
         public DateTime? Birthday { get; set; }
-        public int? Race21 { get; set; }
-        public int? Race22 { get; set; }
-        public int? Race23 { get; set; }
-        public int? Race24 { get; set; }
-        public int? Race25 { get; set; }
+        public double? Race21 { get; set; }
+        public double? Race22 { get; set; }
+        public double? Race23 { get; set; }
+        public double? Race24 { get; set; }
+        public double? Race25 { get; set; }
     }
 }
