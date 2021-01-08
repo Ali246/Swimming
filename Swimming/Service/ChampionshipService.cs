@@ -24,7 +24,8 @@ namespace Swimming.Service
         public async Task<List<Championship>> GetChampionship()
         {
             if (_db != null)
-            {         
+            {
+                Addsal(5);
                 return await _db.CSChampionships.Where(Par => Par.DeletedDate == null).ToListAsync();
             }
 
@@ -52,7 +53,8 @@ namespace Swimming.Service
                     ChampionshipDetails newChampionshipDetails = new ChampionshipDetails();
                     newChampionshipDetails.ParticipantId = item.Id;
                     newChampionshipDetails.ChampionshipId = newChampionship.Id;
-                    _db.CSDChampionshipDetails.Add(newChampionshipDetails);
+                   // _db.CSDChampionshipDetails.Add(newChampionshipDetails);
+                    _db.Add(newChampionshipDetails);
                     _db.SaveChanges();
                 }
                 return newChampionship.Id;
@@ -361,6 +363,295 @@ namespace Swimming.Service
             }
 
             return null;
+        }
+
+        public int Addsal(int ChampionId)
+         {
+            if (_db != null)
+            {
+                List<int> Gender = new List<int>();
+                Gender.Add(0);
+                Gender.Add(1);
+                var RacingId = _db.Racings.ToList().Select(r => r.Id).ToList();               
+                int count = 1;
+                List<int> YEARS = new List<int>();
+                foreach (var RacingIds in RacingId)
+                {
+
+                    YEARS = _db.RacingDetail.Where(s => s.RacingId == RacingIds).Select(rd => rd.Year).ToList();
+                    foreach (var itemYEARS in YEARS)
+                    {
+                        foreach (var itemGender in Gender)
+                        {
+                            SqlParameter param1 = new SqlParameter("@Year", itemYEARS);
+                            SqlParameter param2 = new SqlParameter("@Gender", itemGender);
+                            SqlParameter param3 = new SqlParameter("@RacingId", RacingIds);
+                            SqlParameter param4 = new SqlParameter("@ChampionshipId", ChampionId);
+                            PartiWRacing[] RACWITHPartiObjs;
+
+                            RACWITHPartiObjs = _db.PartiWRacingTBL.FromSqlRaw
+                                        ("EXECUTE dbo.GetPartiwithracing  @Year,@Gender,@RacingId,@ChampionshipId", param1, param2, param3, param4)
+                                .ToArray();                                                       
+                            if (RACWITHPartiObjs.Length != 0)
+                            {
+                                //لو العدد الي جي ==6
+                                if (RACWITHPartiObjs.Length == 6)
+                                {
+                                    ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();                                   
+                                    var NewQualifier = new Qualifier();
+                                    NewQualifier.Name = "H" + count;
+                                    NewQualifier.ChampionId = ChampionId;
+                                    NewQualifier.RacingId = RacingIds;
+                                    _db.Qualifiers.Add(NewQualifier);
+                                    _db.SaveChanges();
+                                    foreach (var item in RACWITHPartiObjs)
+                                    {
+                                        var NewQualifierDetail = new QualifierDetail();
+                                        NewQualifierDetail.PartiId = item.ParticipantId;
+                                        NewQualifierDetail.QualifierId = NewQualifier.Id;
+                                        var getAddedQualifier = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                        var GETQualifierDetails = _db.QualifierDetails.Where(r => getAddedQualifier.Contains(r.QualifierId) && r.PartiId == item.ParticipantId).ToList().Count;
+                                        if (GETQualifierDetails == 0)
+                                        {
+                                            _db.QualifierDetails.Add(NewQualifierDetail);
+                                            _db.SaveChanges();                                          
+                                        }
+                                    }
+                                    count++;
+                                }
+                                //لو اكبر من ال 6
+                                else if (RACWITHPartiObjs.Length > 6)
+                                {
+                                    //ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
+                                  //بقسم علي ال 6
+                                    var Divisions =
+                                           RACWITHPartiObjs.Select((x, i) => new { Index = i, Value = x })
+                                          .GroupBy(x => x.Index / 6)
+                                          .Select(x => x.Select(v => v.Value).ToList())
+                                          .ToList();
+                                    int ru = 0;
+                                    foreach (var itemDivisions in Divisions)
+                                    {
+                                        int itemAdded = 0;
+                                        //لو التقسيمة طلعيت مجموعة من 6
+                                        if (itemDivisions.Count==6)
+                                        {
+                                            var NewQualifier = new Qualifier();
+                                            NewQualifier.Name = "H" + count;
+                                            NewQualifier.ChampionId = ChampionId;
+                                            NewQualifier.RacingId = RacingIds;
+                                            _db.Qualifiers.Add(NewQualifier);
+                                            _db.SaveChanges();
+                                            foreach (var item in itemDivisions)
+                                            {                                               
+                                                var NewQualifierDetail = new QualifierDetail();
+                                                NewQualifierDetail.PartiId = item.ParticipantId;
+                                                NewQualifierDetail.QualifierId = NewQualifier.Id;
+                                                var getAddedQualifier = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                var GETQualifierDetails = _db.QualifierDetails.Where(r => getAddedQualifier.Contains(r.QualifierId) && r.PartiId == item.ParticipantId).ToList().Count;
+                                                if (GETQualifierDetails == 0)
+                                                {
+                                                    _db.QualifierDetails.Add(NewQualifierDetail);
+                                                    _db.SaveChanges();
+                                                }
+                                            }
+                                            itemAdded = 6;
+                                            count++;
+                                            ru = 6;
+                                        }
+                                        //لو التقسيمة طلعيت مجموعة اصغر 6
+                                        else if (itemDivisions.Count < 6)
+                                        {
+                                            var NewQualifiers1 = new Qualifier();
+                                            NewQualifiers1.Name = "H" + count;
+                                            NewQualifiers1.ChampionId = ChampionId;
+                                            NewQualifiers1.RacingId = RacingIds;
+                                            _db.Qualifiers.Add(NewQualifiers1);
+                                            _db.SaveChanges();
+
+                                            foreach (var itemitemDivisions in itemDivisions)
+                                            {
+                                                var NewQualifierDetail = new QualifierDetail();
+                                                NewQualifierDetail.PartiId = itemitemDivisions.ParticipantId;
+                                                NewQualifierDetail.QualifierId = NewQualifiers1.Id;
+                                                var getAddedQualifier = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                var GETQualifierDetails = _db.QualifierDetails.Where(r => getAddedQualifier.Contains(r.QualifierId) && r.PartiId == itemitemDivisions.ParticipantId).ToList().Count;
+                                                if (GETQualifierDetails == 0 && itemAdded<6)
+                                                {
+                                                    _db.QualifierDetails.Add(NewQualifierDetail);
+                                                    _db.SaveChanges();
+                                                    itemAdded++;
+                                                    ru++;
+                                                }                                                
+                                            }
+                                            if (itemAdded < 6)
+                                            {
+                                                SqlParameter param11 = new SqlParameter("@Year", itemYEARS);
+                                                SqlParameter param12 = new SqlParameter("@Gender", itemGender == 1 ? 0 : 1);
+                                                SqlParameter param13 = new SqlParameter("@RacingId", RacingIds);
+                                                SqlParameter param14 = new SqlParameter("@ChampionshipId", ChampionId);
+                                                SqlParameter param15 = new SqlParameter("@top", (6 - itemAdded));
+                                                PartiWRacing[] RACWITHPartiObjss;
+
+                                                RACWITHPartiObjss = _db.PartiWRacingTBL.FromSqlRaw
+                                                            ("EXECUTE dbo.GettopPartiwithracing  @Year,@Gender,@RacingId,@ChampionshipId,@top", param11, param12, param13, param14, param15)
+                                                    .ToArray();
+                                                foreach (var itemRACWITHPartiObjss in RACWITHPartiObjss)
+                                                {
+                                                    var NewQualifierDetails = new QualifierDetail();
+                                                    NewQualifierDetails.PartiId = itemRACWITHPartiObjss.ParticipantId;
+                                                    NewQualifierDetails.QualifierId = NewQualifiers1.Id;
+                                                    var getAddedQualifiers = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                    var GETQualifierDetailss = _db.QualifierDetails.Where(r => getAddedQualifiers.Contains(r.QualifierId) && r.PartiId == itemRACWITHPartiObjss.ParticipantId).ToList().Count;
+                                                    if (GETQualifierDetailss == 0 && itemAdded < 6)
+                                                    {
+                                                        _db.QualifierDetails.Add(NewQualifierDetails);
+                                                        _db.SaveChanges();
+                                                        itemAdded++;
+                                                        ru++;
+                                                    }
+                                                }
+                                            }
+                                            if (itemAdded < 6)
+                                            {
+                                               
+                                                foreach (var iteYEARS in YEARS)
+                                                {
+                                                    PartiWRacing[] RACWITHPartiObjs21sd;
+                                                    foreach (var iteGender in Gender)
+                                                    {
+                                                        SqlParameter param21 = new SqlParameter("@Year", itemYEARS);
+                                                        SqlParameter param22 = new SqlParameter("@Gender", itemGender);
+                                                        SqlParameter param23 = new SqlParameter("@RacingId", RacingIds);
+                                                        SqlParameter param24 = new SqlParameter("@ChampionshipId", ChampionId);
+                                                        SqlParameter param25 = new SqlParameter("@top", (6 - itemAdded));
+
+                                                        RACWITHPartiObjs21sd = _db.PartiWRacingTBL.FromSqlRaw
+                                                                    ("EXECUTE dbo.GettopPartiwithracing  @Year,@Gender,@RacingId,@ChampionshipId,@top", param21, param22, param23, param24, param25)
+                                                            .ToArray();
+                                                        foreach (var RACWITHPartiObjs21s in RACWITHPartiObjs21sd)
+                                                        {
+                                                            var NewQualifierDetails = new QualifierDetail();
+                                                            NewQualifierDetails.PartiId = RACWITHPartiObjs21s.ParticipantId;
+                                                            NewQualifierDetails.QualifierId = NewQualifiers1.Id;
+                                                            var getAddedQualifiers = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                            var GETQualifierDetailss = _db.QualifierDetails.Where(r => getAddedQualifiers.Contains(r.QualifierId) && r.PartiId == RACWITHPartiObjs21s.ParticipantId).ToList().Count;
+                                                            if (GETQualifierDetailss == 0 && itemAdded < 6)
+                                                            {
+                                                                _db.QualifierDetails.Add(NewQualifierDetails);
+                                                                _db.SaveChanges();
+                                                                itemAdded++;
+                                                                ru++;
+                                                            }
+                                                        }                                                       
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (ru > 0)
+                                    {
+                                        count++;
+                                    }
+                                   
+                                }
+                                else if (RACWITHPartiObjs.Length < 6)
+                                {
+                                   
+                                    int itemAdded = 0;                                                                               
+                                            var NewQualifiersr = new Qualifier();
+                                    NewQualifiersr.Name = "H" + count;
+                                    NewQualifiersr.ChampionId = ChampionId;
+                                    NewQualifiersr.RacingId = RacingIds;
+                                            _db.Qualifiers.Add(NewQualifiersr);
+                                            _db.SaveChanges();
+                                    
+                                    foreach (var itemitemDivisions in RACWITHPartiObjs)
+                                            {
+                                                var NewQualifierDetail = new QualifierDetail();
+                                                NewQualifierDetail.PartiId = itemitemDivisions.ParticipantId;
+                                                NewQualifierDetail.QualifierId = NewQualifiersr.Id;
+                                                var getAddedQualifier = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                var GETQualifierDetails = _db.QualifierDetails.Where(r => getAddedQualifier.Contains(r.QualifierId) && r.PartiId == itemitemDivisions.ParticipantId).ToList().Count;
+                                                if (GETQualifierDetails == 0 && itemAdded < 6)
+                                                {
+                                                    _db.QualifierDetails.Add(NewQualifierDetail);
+                                                    _db.SaveChanges();
+                                                    itemAdded++;
+                                                }
+                                            }
+                                            if (itemAdded < 6)
+                                            {
+                                                SqlParameter param11 = new SqlParameter("@Year", itemYEARS);
+                                                SqlParameter param12 = new SqlParameter("@Gender", itemGender == 1 ? 0 : 1);
+                                                SqlParameter param13 = new SqlParameter("@RacingId", RacingIds);
+                                                SqlParameter param14 = new SqlParameter("@ChampionshipId", ChampionId);
+                                                SqlParameter param15 = new SqlParameter("@top", (6 - itemAdded));
+                                                PartiWRacing[] RACWITHPartiObjss21;
+
+                                        RACWITHPartiObjss21 = _db.PartiWRacingTBL.FromSqlRaw
+                                                            ("EXECUTE dbo.GettopPartiwithracing  @Year,@Gender,@RacingId,@ChampionshipId,@top", param11, param12, param13, param14, param15)
+                                                    .ToArray();
+                                                foreach (var itemRACWITHPartiObjss in RACWITHPartiObjss21)
+                                                {
+                                                    var NewQualifierDetails = new QualifierDetail();
+                                                    NewQualifierDetails.PartiId = itemRACWITHPartiObjss.ParticipantId;
+                                                    NewQualifierDetails.QualifierId = NewQualifiersr.Id;
+                                                    var getAddedQualifiers = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                    var GETQualifierDetailss = _db.QualifierDetails.Where(r => getAddedQualifiers.Contains(r.QualifierId) && r.PartiId == itemRACWITHPartiObjss.ParticipantId).ToList().Count;
+                                                    if (GETQualifierDetailss == 0 && itemAdded < 6)
+                                                    {
+                                                        _db.QualifierDetails.Add(NewQualifierDetails);
+                                                        _db.SaveChanges();
+                                                        itemAdded++;
+                                                    }
+                                                }
+                                            }
+                                            if (itemAdded < 6)
+                                            {
+                                                foreach (var iteYEARS in YEARS)
+                                                {
+                                                    foreach (var iteGender in Gender)
+                                                    {
+                                                        SqlParameter param21 = new SqlParameter("@Year", itemYEARS);
+                                                        SqlParameter param22 = new SqlParameter("@Gender", itemGender);
+                                                        SqlParameter param23 = new SqlParameter("@RacingId", RacingIds);
+                                                        SqlParameter param24 = new SqlParameter("@ChampionshipId", ChampionId);
+                                                        SqlParameter param25 = new SqlParameter("@top", (6 - itemAdded));
+                                                PartiWRacing[] RACWITHPartiObjs21;
+
+                                                        RACWITHPartiObjs21 = _db.PartiWRacingTBL.FromSqlRaw
+                                                                     ("EXECUTE dbo.GettopPartiwithracing  @Year,@Gender,@RacingId,@ChampionshipId,@top", param21, param22, param23, param24, param25)
+                                                            .ToArray();
+                                                        foreach (var RACWITHPartiObjs21s in RACWITHPartiObjs21)
+                                                        {
+                                                            var NewQualifierDetails = new QualifierDetail();
+                                                            NewQualifierDetails.PartiId = RACWITHPartiObjs21s.ParticipantId;
+                                                            NewQualifierDetails.QualifierId = NewQualifiersr.Id;
+                                                            var getAddedQualifiers = _db.Qualifiers.Where(Q => Q.RacingId == RacingIds && Q.ChampionId == ChampionId).Select(Qs => Qs.Id).ToList();
+                                                            var GETQualifierDetailss = _db.QualifierDetails.Where(r => getAddedQualifiers.Contains(r.QualifierId) && r.PartiId == RACWITHPartiObjs21s.ParticipantId).ToList().Count;
+                                                            if (GETQualifierDetailss == 0 && itemAdded < 6)
+                                                            {
+                                                                _db.QualifierDetails.Add(NewQualifierDetails);
+                                                                _db.SaveChanges();
+                                                                itemAdded++;
+                                                            }
+                                                        }                                               
+                                                    }
+                                                }
+                                            }
+                                    if (itemAdded > 0)
+                                    {
+                                        count++;
+                                    }
+                                }
+                            }                           
+                        }
+                    }
+                }
+                return 1;
+            }
+            return 0;
         }
         #endregion    
     }

@@ -36,5 +36,9 @@ namespace Swimming.Data
         public DbSet<ResultOfRacingFree> ResultOfRacingFrees { get; set; }
         public DbSet<ResultOfRacingFins> ResultOfRacingFin { get; set; }
         public DbSet<PartiWLastResult> PartiWLastResults { get; set; }
+        public DbSet<PartiWRacing> PartiWRacingTBL { get; set; }
+        public DbSet<Qualifier> Qualifiers { get; set; }
+        public DbSet<QualifierDetail> QualifierDetails { get; set; }
+        
     }
 }

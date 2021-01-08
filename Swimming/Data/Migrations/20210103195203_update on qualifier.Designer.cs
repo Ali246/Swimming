@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Swimming.Data;
 
 namespace Swimming.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210103195203_update on qualifier")]
+    partial class updateonqualifier
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -547,9 +549,6 @@ namespace Swimming.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RacingId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Qualifiers");
@@ -566,6 +565,9 @@ namespace Swimming.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("QualifierId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RacingId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
