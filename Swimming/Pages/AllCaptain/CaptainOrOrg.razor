@@ -23,26 +23,30 @@
             }
             else
             {
-                <RadzenGrid @ref="CaptainOrOrganizationGrid" AllowFiltering="true"
-                            AllowPaging="true" PageSize="10"
-                            AllowSorting="true" EditMode="DataGridEditMode.Multiple"
-                            Data="@CaptainOrOrganizationList" TItem="CaptainOrOrganization">
-                    <Columns>
-                        <RadzenGridColumn TItem="CaptainOrOrganization" Property="CaptainOrOrganizName" Title="الاسم" />
-                        <RadzenGridColumn TItem="CaptainOrOrganization" Property="Mobile" Title="الموبايل" />
-                        <RadzenGridColumn TItem="CaptainOrOrganization" Property="CityName" Title="المحافظة" />
-                        <RadzenGridColumn TItem="CaptainOrOrganization" Property="al:web:url" Title="تعديل" Filterable="false">
-                            <Template Context="CaptainOrOrganization">
-                                <RadzenButton Text="تعديل" Icon="edit" Click="@(args => Edit(CaptainOrOrganization))" id="bnt-style-general" />
-                            </Template>
-                        </RadzenGridColumn>
-                        <RadzenGridColumn TItem="CaptainOrOrganization" Property="al:web:url" Title="مسح" Filterable="false">
-                            <Template Context="CaptainOrOrganization">
-                                <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(CaptainOrOrganization))" id="bnt-style-general" />
-                            </Template>
-                        </RadzenGridColumn>
-                    </Columns>
-                </RadzenGrid>
+                foreach (var item in CaptainOrOrganizationList)
+                {
+                    <RadzenGrid @ref="CaptainOrOrganizationGrid" AllowFiltering="true"
+                                AllowPaging="true" PageSize="10"
+                                AllowSorting="true" EditMode="DataGridEditMode.Multiple"
+                                Data="@item" TItem="CaptainOrOrganization">
+                        <Columns>
+                            <RadzenGridColumn TItem="CaptainOrOrganization" Property="CaptainOrOrganizName" Title="الاسم" />
+                            <RadzenGridColumn TItem="CaptainOrOrganization" Property="Mobile" Title="الموبايل" />
+                            <RadzenGridColumn TItem="CaptainOrOrganization" Property="CityName" Title="المحافظة" />
+                            <RadzenGridColumn TItem="CaptainOrOrganization" Property="al:web:url" Title="تعديل" Filterable="false">
+                                <Template Context="CaptainOrOrganization">
+                                    <RadzenButton Text="تعديل" Icon="edit" Click="@(args => Edit(CaptainOrOrganization))" id="bnt-style-general" />
+                                </Template>
+                            </RadzenGridColumn>
+                            <RadzenGridColumn TItem="CaptainOrOrganization" Property="al:web:url" Title="مسح" Filterable="false">
+                                <Template Context="CaptainOrOrganization">
+                                    <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(CaptainOrOrganization))" id="bnt-style-general" />
+                                </Template>
+                            </RadzenGridColumn>
+                        </Columns>
+                    </RadzenGrid>
+                }
+
 
             }
         </RadzenCard>
@@ -55,12 +59,12 @@
     RadzenGrid<CaptainOrOrganization> CaptainOrOrganizationGrid;
     [Parameter]
     public string viewType { get; set; }
-    List<CaptainOrOrganization> CaptainOrOrganizationList = new List<CaptainOrOrganization>();
+    List<List<CaptainOrOrganization>> CaptainOrOrganizationList = new List<List<CaptainOrOrganization>>();
     CaptainOrOrganization CaptainOrOrganizations = new CaptainOrOrganization();
     protected override async Task OnInitializedAsync()
     {
 
-        CaptainOrOrganizationList = await Task.Run(() => ParticipantSevice.GetCaptainOrOrg());
+        CaptainOrOrganizationList.Add(await Task.Run(() => ParticipantSevice.GetCaptainOrOrg()));
     }
     void EditRow(CaptainOrOrganization EditCaptainOrOrganization)
     {
@@ -76,10 +80,10 @@
         bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "هل تريد مسح الكباتن/الهيئات ؟ ");
         if (confirmed)
         {
-            DeleteCaptainOrOrganization.DeleteDate = DateTime.Now;
-            ParticipantSevice.UpdateCaptainOrOrg(DeleteCaptainOrOrganization);
-            CaptainOrOrganizationList.Remove(DeleteCaptainOrOrganization);
-            CaptainOrOrganizationGrid.Reload();
+            //DeleteCaptainOrOrganization.DeleteDate = DateTime.Now;
+            //ParticipantSevice.UpdateCaptainOrOrg(DeleteCaptainOrOrganization);
+            //CaptainOrOrganizationList.Remove(DeleteCaptainOrOrganization);
+            //CaptainOrOrganizationGrid.Reload();
         }
     }
     protected void InsrtRow()

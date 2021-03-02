@@ -42,10 +42,12 @@
 
     @code {
         Points NewPoints = new Points();
+        
         List<Points> allPointsList = new List<Points>();
 
         protected async Task CreateRacing()
         {
+            
             var Returned = RacingService.AddPoint(NewPoints);
             if (await Returned)
             {

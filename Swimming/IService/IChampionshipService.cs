@@ -32,6 +32,7 @@ namespace Swimming.IService
         ResultOfRacingFree[] GetPointsFreeAsync(int ChampionId);
         ResultOfRacingFins[] GetPointsFinsAsync(int ChampionId);
         List<Championship> GetNewChampionship();
+        int UpdateQualifiers(int newQuId, PartiWLastResult currentQualifier);
         #endregion
     }
 }

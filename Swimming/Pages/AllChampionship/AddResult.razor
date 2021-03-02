@@ -40,11 +40,27 @@
                                         class="form-control" />
                     </div>
                     <RadzenGrid @ref="ParticipantsGrid" AllowFiltering="true"
-                                AllowPaging="true" PageSize="1000"
+                                AllowPaging="true" PageSize="1000" 
                                 AllowSorting="true" EditMode="DataGridEditMode.Single"
-                                Data="@newParticipants" TItem="PartiWLastResult" Style="width:700px !important" RowSelect="@(args => Party = args)">
+                                Data="@newParticipants" TItem="PartiWLastResult"  Style="width:1200px !important" RowSelect="@(args => Party = args)">
                         <Columns>
-                            <RadzenGridColumn TItem="PartiWLastResult" Property="Name" Title="الاسم" />
+                            @*<RadzenGridColumn TItem="PartiWLastResult" Property="Name" Title="تعديل التصفية" Width="200px">
+            <Template Context="PartiWLastResult">
+                <RadzenDropDown AllowClear="true" TValue="int"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.StartsWith"
+                                AllowFiltering="true"
+                                Data="@newParticipantali"
+                                TextProperty="Qualifiersname"
+                                ValueProperty="QualifierIds"
+                                Style="margin-bottom: 20px;width:200px"
+                                Change="@(args => Changeofdrop(args))"
+                                class="form-control" />
+            </Template>
+        </RadzenGridColumn>*@
+
+                            <RadzenGridColumn Width="200px" TItem="PartiWLastResult" Property="Name" Title="الاسم" />
+                            @*<RadzenGridColumn TItem="PartiWLastResult" Property="Qualifiersname" Title="اسم التصفية" />*@
                             <RadzenGridColumn TItem="PartiWLastResult" Property="GenderName" Title="الجنس" />
                             <RadzenGridColumn TItem="PartiWLastResult" Property="Birthday" Title="تاريخ الميلاد">
                                 <Template Context="PartiWLastResult">
@@ -55,13 +71,23 @@
                             <RadzenGridColumn TItem="PartiWLastResult" Property="Result" Title="اخر نتيجة" />
                             <RadzenGridColumn Width="150px" TItem="PartiWLastResult" Property="al:web:url" Title="اضافة نتيجة" Filterable="false">
                                 <Template Context="PartiWLastResult">
-                                    <RadzenNumeric TValue="double" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss"))/>
-                                    @*<RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true" 
-                                                      ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
-                                                      SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />*@
+                                    <RadzenNumeric TValue="double" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />
+                                    @*<RadzenDatePicker TValue="DateTime?" ShowTime="true" TimeOnly="true"
+                ShowSeconds="true" HoursStep="1" MinutesStep="1" DateFormat="HH:mm:ss" ShowTimeOkButton="false"
+                SecondsStep="1" Change=@(args => OnChange(args, "DatePicker with steps for time", "HH:mm:ss")) />*@
                                 </Template>
                             </RadzenGridColumn>
-
+                            <RadzenGridColumn Width="200px" TItem="PartiWLastResult" Property="Qualifiersname" Title="تعديل التصفية">
+                                <EditTemplate Context="PartiWLastResult">
+                                    <RadzenDropDown TValue="int" Change="@(args => Changeofdrop(args))" Data="@newParticipantali" TextProperty="Qualifiersname" ValueProperty="QualifierIds" Style="width:100%" />
+                                </EditTemplate>
+                            </RadzenGridColumn>
+                            <RadzenGridColumn TItem="PartiWLastResult" Context="sampleBlazorModelsSampleOrder" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                                <Template Context="order">
+                                    <RadzenButton Icon="edit" Size="ButtonSize.Small" Click="@(args => EditRow(order))">
+                                    </RadzenButton>
+                                </Template>
+                            </RadzenGridColumn>
                         </Columns>
 
                     </RadzenGrid>
@@ -77,11 +103,13 @@
 
 
 @code {
+    int ali;
     [Parameter]
     public string ChampionShId { get; set; }
     RadzenGrid<PartiWLastResult> ParticipantsGrid;
     ChampionShipwithRacing newChampionShipwithRacing = new ChampionShipwithRacing();
     List<PartiWLastResult> newParticipants = new List<PartiWLastResult>();
+    List<PartiWLastResult> newParticipantali = new List<PartiWLastResult>();
     List<Racing> allRacingofchamp = new List<Racing>();
     Participants selectedParticipants = new Participants();
     List<Racing> Racings;
@@ -91,6 +119,7 @@
     Championship NewChampionship = new Championship();
     IEnumerable<int> selectedRacing;
     object str = null;
+    int lastRace;
     object data = null;
     IEnumerable<DateTime> dates = new DateTime[] { DateTime.Today.AddDays(-1), DateTime.Today.AddDays(1) };
     protected override async Task OnInitializedAsync()
@@ -114,12 +143,41 @@
     {
         if ((int)value != 0)
         {
+            lastRace = (int)value;
             str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
             var GetParti = ChampionshipService.GetPartiOfRac((int)value, Convert.ToInt32(ChampionShId));
             // selectedParticipants = ParticipantSevice.GetParticipantbyId((int)value);
             newParticipants = new List<PartiWLastResult>(GetParti);
             customers = Racings.AsEnumerable();
+
+            newParticipantali= newParticipants.GroupBy(y => y.QualifierIds).Select(s=>s.First()).ToList();
             ParticipantsGrid.Reload();
+        }
+
+    }
+    void EditRow(PartiWLastResult order)
+    {
+        ParticipantsGrid.EditRow(order);
+    }
+
+    void Changeofdrop(object value)
+    {
+        if ((int)value != 0)
+        {
+
+            var Partyies = Party;
+            str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+            int ReturnedSave = ChampionshipService.UpdateQualifiers((int)value, Partyies);
+            if (ReturnedSave ==1)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success,Summary = "تم التعديل بنجاح", Duration = 4000 });
+                Change(lastRace);
+            }
+            else if (ReturnedSave ==0)
+            {
+                ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning,Summary = "لا يمكن التعديل", Duration = 4000 });
+            }
+
         }
 
     }
@@ -138,19 +196,13 @@
         newParticipants.Remove(part);
         ParticipantsGrid.Reload();
     }
-    //protected void addResult(Participants Particip)
-    //{
-    //    int result =(time.Value.Minute*60) + time.Value.Second;
-    //    var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Particip.Id, (int)str);
-    //    newChampionShipwithRacing.Id = CSDID;
-    //    newChampionShipwithRacing.Result = result;
-    //    ChampionshipService.AddNewResults(newChampionShipwithRacing);
-    //}
+
     void OnChange(double value, string name, string format)
     {
-       // time = value;
+        // time = value;
+        int w = ali;
         var Partyies = Party;
-       // int result = (time.Value.Minute * 60) + time.Value.Second;
+        // int result = (time.Value.Minute * 60) + time.Value.Second;
 
         var CSDID = ChampionshipService.GetChampionRacingDetailsUpdate(Convert.ToInt32(ChampionShId), Partyies.Id, (int)str);
         newChampionShipwithRacing.Id = CSDID;
