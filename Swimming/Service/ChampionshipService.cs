@@ -365,7 +365,7 @@ namespace Swimming.Service
             return null;
         }
 
-        public int Addsal(int ChampionId)
+        public int Generatefiltering(int ChampionId)
         {
             if (_db != null)
             {

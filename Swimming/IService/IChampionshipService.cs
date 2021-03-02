@@ -33,6 +33,7 @@ namespace Swimming.IService
         ResultOfRacingFins[] GetPointsFinsAsync(int ChampionId);
         List<Championship> GetNewChampionship();
         int UpdateQualifiers(int newQuId, PartiWLastResult currentQualifier);
+        int Generatefiltering(int ChampionId);
         #endregion
     }
 }

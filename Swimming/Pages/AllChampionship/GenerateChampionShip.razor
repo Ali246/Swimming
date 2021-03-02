@@ -37,22 +37,27 @@
                         </RadzenGridColumn>
 
                         @*<RadzenGridColumn TItem="Championship" Property="al:web:url" Title="اضافة سباق" Filterable="false">
-                                <Template Context="Championship">
-                                    <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
-                                </Template>
-                            </RadzenGridColumn>*@
+            <Template Context="Championship">
+                <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
+            </Template>
+        </RadzenGridColumn>*@
 
                         <RadzenGridColumn Width="170px" TItem="Championship" Property="AddResult" Title="اضافة نتائج" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Width="150px" Text="اضافة نتائج" Icon="edit" Click="@(args => AddResulttoParti(Championship))" id="bnt-style-general" />
                             </Template>
                         </RadzenGridColumn>
-                        <RadzenGridColumn Width="150px" TItem="Championship" Property="EditChamp" Title="تعديل" Filterable="false">
+                        <RadzenGridColumn Width="120px" TItem="Championship" Property="EditChamp" Title="تعديل" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Width="100px" Text="تعديل" Icon="edit" Click="@(args => Edit(Championship))" id="bnt-style-general" />
                             </Template>
                         </RadzenGridColumn>
-                        <RadzenGridColumn Width="150px" TItem="Championship" Property="DeleteChamp" Title="مسح" Filterable="false">
+                        <RadzenGridColumn Width="190px" TItem="Championship" Property="FilterChamp" Title="انشاء تصفيه" Filterable="false">
+                            <Template Context="Championship">
+                                <RadzenButton Text="انشاء تصفيه" Icon="filter" Click="@(args => Filtering(Championship))" id="bnt-style-general" />
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn Width="120px" TItem="Championship" Property="DeleteChamp" Title="مسح" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Text="مسح" Icon="delete" Click="@(args => Delete(Championship))" id="bnt-style-general" />
                             </Template>
@@ -82,6 +87,10 @@
     void EditRow(Championship EditChampionship)
     {
         ChampionshipGrid.EditRow(EditChampionship);
+    }
+    void Filtering(Championship EditChampionship)
+    {
+        ChampionshipService.Generatefiltering(EditChampionship.Id);
     }
     protected void Edit(Championship UpdateChampionship)
     {
@@ -116,6 +125,6 @@
     }
     void CellRender(CellRenderEventArgs<Championship> args)
     {
-      
+
     }
 }
