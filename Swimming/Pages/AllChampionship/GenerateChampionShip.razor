@@ -7,6 +7,7 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@inject NotificationService notificationService
 <div class="titleicon">
     <span class="oi oi-star" aria-hidden="true"></span>
     <h1>البطولات </h1>
@@ -37,10 +38,10 @@
                         </RadzenGridColumn>
 
                         @*<RadzenGridColumn TItem="Championship" Property="al:web:url" Title="اضافة سباق" Filterable="false">
-            <Template Context="Championship">
-                <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
-            </Template>
-        </RadzenGridColumn>*@
+                                <Template Context="Championship">
+                                    <RadzenButton Width="150px" Text="اضافة سباق" Icon="edit" Click="@(args => AddRacingtoParti(Championship))" id="bnt-style-general" />
+                                </Template>
+                            </RadzenGridColumn>*@
 
                         <RadzenGridColumn Width="170px" TItem="Championship" Property="AddResult" Title="اضافة نتائج" Filterable="false">
                             <Template Context="Championship">
@@ -52,7 +53,7 @@
                                 <RadzenButton Width="100px" Text="تعديل" Icon="edit" Click="@(args => Edit(Championship))" id="bnt-style-general" />
                             </Template>
                         </RadzenGridColumn>
-                        <RadzenGridColumn Width="190px" TItem="Championship" Property="FilterChamp" Title="انشاء تصفيه" Filterable="false">
+                        <RadzenGridColumn Width="190px"  TItem="Championship" Property="FilterChamp" Title="انشاء تصفيه" Filterable="false">
                             <Template Context="Championship">
                                 <RadzenButton Text="انشاء تصفيه" Icon="filter" Click="@(args => Filtering(Championship))" id="bnt-style-general" />
                             </Template>
@@ -90,7 +91,16 @@
     }
     void Filtering(Championship EditChampionship)
     {
-        ChampionshipService.Generatefiltering(EditChampionship.Id);
+        var Response=  ChampionshipService.Generatefiltering(EditChampionship.Id);
+        if (Response==1)
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Success, Summary = "تم بنجاح", Duration = 4000 });
+        }
+        else
+        {
+            ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "تم إنشاء تصفية من قبل", Duration = 4000 });
+        }
+
     }
     protected void Edit(Championship UpdateChampionship)
     {
@@ -125,6 +135,11 @@
     }
     void CellRender(CellRenderEventArgs<Championship> args)
     {
+
+    }
+    void ShowNotification(NotificationMessage message)
+    {
+        notificationService.Notify(message);
 
     }
 }
