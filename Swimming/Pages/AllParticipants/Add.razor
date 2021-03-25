@@ -99,7 +99,7 @@
         protected void CreateParticipat()
         {
             NewParticipants.GenderName = NewParticipants.Gender == 0 ? "ذكر" : NewParticipants.Gender == 1 ? "انثي" : null;
-            NewParticipants.TypeOfParticipantName = NewParticipants.TypeOfParticipant == 0 ? "كبار " : NewParticipants.TypeOfParticipant == 1 ? "صغار  " : NewParticipants.TypeOfParticipant == 2 ? "احتياجات خاصة " : null;
+            NewParticipants.TypeOfParticipantName = NewParticipants.TypeOfParticipant == 0 ? " صغار" : NewParticipants.TypeOfParticipant == 1 ? "كبار" : NewParticipants.TypeOfParticipant == 2 ? "احتياجات خاصة " : null;
             ParticipantSevice.AddParticipant(NewParticipants);
             NavigationManager.NavigateTo("AllParticipants/MyParticipant/", true);
         }
